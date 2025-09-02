@@ -1,0 +1,42 @@
+.sidebar {
+  position: fixed;
+  top: 100px; /* abaixo do Header */
+  left: 0;
+  width: 220px;
+  height: calc(100vh - 100px);
+  background-color: #ffffff; /* azul clarinho do fundo */
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 900;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #87cefa; /* azul claro */
+  border-radius: 6px;
+  padding: 12px;
+  margin: 6px 0;
+  font-size: 16px;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.menu-item:hover {
+  background-color: #5eb8f0; /* azul médio no hover */
+}
+
+.menu-item.active {
+  background-color: #1e90ff; /* azul escuro quando ativo */
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
