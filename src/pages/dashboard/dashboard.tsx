@@ -1,6 +1,6 @@
 export default function Dashboard() {
   return (
-    <div style={{ padding: "10px", backgroundColor: "lightblue", marginTop: "50px" }}>
+    <div style={{ padding: "10px", backgroundColor: "lightblue", marginTop: "20px" }}>
       <h1>🚀 Testando Dashboard</h1>
     </div>
   );
