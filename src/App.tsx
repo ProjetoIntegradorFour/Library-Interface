@@ -1,12 +1,9 @@
+import { RouterProvider } from "react-router-dom";
+import { router } from "./routes/router";
+
 function App() {
   return (
-    <div>
-      <main className="p-6">
-        <h2>Hello World!</h2>
-        <p>Bem-vindo à Library Interface!</p>
-</main>
-
-    </div>
+    <RouterProvider router={router} />
   );
 }
 

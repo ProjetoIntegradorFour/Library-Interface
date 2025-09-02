@@ -1,5 +1,5 @@
 import "./Header.css";
-import logo from "../assets/img/logo.png"; // caminho relativo a partir do Header.jsx
+import logo from "../../assets/img/logo.png"; 
 
 export default function Header() {
   return (
