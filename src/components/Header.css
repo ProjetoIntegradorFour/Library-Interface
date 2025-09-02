@@ -1,0 +1,40 @@
+/* Header.css */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background-color: #9AA6BF;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.logo-text {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+}
+
+.logo {
+  width: 60px; 
+  height: 60px;
+  object-fit: contain;
+}
+
+.text {
+  display: flex;
+  flex-direction: column; 
+  line-height: 1.2;
+}
+
+.text span {
+  font-family: "Racing Sans One", sans-serif;
+  font-weight: bold;
+  font-size: 35px;
+  letter-spacing: 2px;
+}

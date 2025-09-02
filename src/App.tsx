@@ -1,8 +1,13 @@
 function App() {
-
   return (
-    <h1>Hello World!</h1>
-  )
+    <div>
+      <main className="p-6">
+        <h2>Hello World!</h2>
+        <p>Bem-vindo à Library Interface!</p>
+</main>
+
+    </div>
+  );
 }
 
-export default App
+export default App;

@@ -1,0 +1,16 @@
+import "./Header.css";
+import logo from "../assets/img/logo.png"; // caminho relativo a partir do Header.jsx
+
+export default function Header() {
+  return (
+    <header className="header">
+      <div className="logo-text">
+        <img src={logo} alt="Logo" className="logo" />
+        <div className="text">
+          <span>SENAI</span>
+          <span>Biblioteca Virtual</span>
+        </div>
+      </div>
+    </header>
+  );
+}
