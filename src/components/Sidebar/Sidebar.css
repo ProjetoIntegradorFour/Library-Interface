@@ -1,14 +1,14 @@
 .sidebar {
   position: fixed;
-  top: 100px; /* abaixo do Header */
+  top: 100px;
   left: 0;
-  width: 220px;
+  width: 350px;
   height: calc(100vh - 100px);
-  background-color: #ffffff; /* azul clarinho do fundo */
+  background-color: #ffffff; 
   display: flex;
   flex-direction: column;
   padding: 10px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
   z-index: 900;
 }
 
@@ -16,23 +16,25 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #87cefa; /* azul claro */
+  background-color: #7CDEFF;
   border-radius: 6px;
   padding: 12px;
   margin: 6px 0;
   font-size: 16px;
   color: white;
-  font-weight: bold;
+  font-weight: 500;
+  font-family: "Roboto", sans-serif;
   text-decoration: none;
   transition: background-color 0.3s ease;
 }
 
 .menu-item:hover {
-  background-color: #5eb8f0; /* azul médio no hover */
+  background-color: #5eb8f0;
 }
 
 .menu-item.active {
-  background-color: #1e90ff; /* azul escuro quando ativo */
+  background-color: #499CD8;
+  border: #1B77BA solid 2px, ;
 }
 
 .icon {
