@@ -6,6 +6,8 @@ import acervoIcon from "../../assets/img/book.png";
 import emprestimosIcon from "../../assets/img/user.png";
 import atrasosIcon from "../../assets/img/money.png";
 import relatoriosIcon from "../../assets/img/document.png";
+import perfilIcon from "../../assets/img/perfil.png";
+import configIcon from "../../assets/img/configuracoes.png";
 
 export default function Sidebar() {
   return (
@@ -49,6 +51,24 @@ export default function Sidebar() {
         <img src={relatoriosIcon} alt="Relatórios" className="icon" />
         Relatórios
       </NavLink>
-    </aside>
+ 
+      <div className="menu-bottom">
+        <NavLink
+          to="/perfil"
+          className={({ isActive }) => `mini-item ${isActive ? "active" : ""}`}
+        >
+          <img src={perfilIcon} alt="Perfil" className="mini-icon" />
+        </NavLink>
+
+        <NavLink
+          to="/configuracao"
+          className={({ isActive }) => `mini-item ${isActive ? "active" : ""}`}
+        >
+          <img src={configIcon} alt="Configurações" className="mini-icon" />
+        </NavLink>
+      </div>
+      </aside>  
   );
 }
+
+

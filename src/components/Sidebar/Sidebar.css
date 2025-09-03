@@ -3,11 +3,12 @@
   top: 100px;
   left: 0;
   width: 350px;
-  height: calc(100vh - 100px);
-  background-color: #ffffff; 
+  min-height: calc(100vh - 100px);
+  background-color: #ffffff;
   display: flex;
   flex-direction: column;
   padding: 10px;
+  padding-bottom: 15px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
   z-index: 900;
 }
@@ -34,11 +35,43 @@
 
 .menu-item.active {
   background-color: #499CD8;
-  border: #1B77BA solid 2px, ;
+  border: #1B77BA solid 2px;
 }
 
 .icon {
   width: 20px;
   height: 20px;
+  object-fit: contain;
+}
+
+.menu-bottom {
+  display: flex;
+  gap: 8px;
+  margin-top: 490px;
+}
+
+.mini-item {
+  flex: 1; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #7CDEFF;
+  border-radius: 6px;
+  padding: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.mini-item:hover {
+  background-color: #5eb8f0;
+}
+
+.mini-item.active {
+  background-color: #499CD8;
+  border: #1B77BA solid 2px;
+}
+
+.mini-icon {
+  width: px;
+  height: 30px;
   object-fit: contain;
 }

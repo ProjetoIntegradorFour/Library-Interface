@@ -3,7 +3,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 350px;
   height: 100px;
   background-color: #9AA6BF;
   color: white;
@@ -35,6 +35,6 @@
 .text span {
   font-family: "Racing Sans One", sans-serif;
   font-weight: bold;
-  font-size: 35px;
+  font-size: 18px;
   letter-spacing: 2px;
 }

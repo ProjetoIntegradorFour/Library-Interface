@@ -5,6 +5,8 @@ import Acervo from "../pages/acervo/acervo";
 import Emprestimos from "../pages/emprestimos/emprestimos";
 import Atrasos from "../pages/atrasos/atrasos";
 import Relatorios from "../pages/relatorios/relatorios";
+import Perfil from "../pages/perfil/perfil";
+import Configuracao from "../pages/configuracao/configuracao";
 import Header from "../components/Header/Header";
 import Sidebar from "../components/Sidebar/Sidebar";
 
@@ -35,6 +37,8 @@ export const router = createBrowserRouter([
       { path: "/emprestimos", element: <Emprestimos /> },
       { path: "/atrasos", element: <Atrasos /> },
       { path: "/relatorios", element: <Relatorios /> },
+      { path: "/perfil", element: <Perfil /> },
+      { path: "/configuracao", element: <Configuracao /> },
     ],
   },
 ]);
