@@ -2,7 +2,7 @@ import "./login.css";
 
 export default function Login() {
   return (
-    <div className="page-content">
+      <div className="login-page">
       <div className="login-box">
         <h2>Biblioteca Virtual</h2>
         <form>
@@ -19,6 +19,6 @@ export default function Login() {
           <button type="submit" className="login-btn">Entrar</button>
         </form>
       </div>
-    </div>
+      </div>
   );
 }
