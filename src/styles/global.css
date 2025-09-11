@@ -1,0 +1,15 @@
+.archive-page,
+.report-page,
+.delays-page,
+.configuration-page,
+.dashboard-page,
+.loan-page,
+.profile-page {
+  margin-left: 260px; 
+  padding: 20px;
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  height: 60px; 
+  box-sizing: border-box;
+}
