@@ -1,9 +1,21 @@
-import { createBrowserRouter, Outlet } from "react-router-dom";
+import { createBrowserRouter, Outlet, useNavigate } from "react-router-dom";
 import { Dashboard, Login, Acervo, Emprestimos, Atrasos, Relatorios, Perfil, Configuracao } from "../pages";
+import { useEffect } from "react";
+import { AmILogged } from "../service/auth/authCheck";
 import Header from "../components/Header/Header";
 import Sidebar from "../components/Sidebar/Sidebar";
-
 function ProtectedLayout() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!AmILogged()) {
+      navigate("/login", { replace: true });
+    } else {
+      navigate("/", { replace: true });
+    }
+  }, [navigate]);
+
+  if (!AmILogged()) return null;
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar />
@@ -14,7 +26,7 @@ function ProtectedLayout() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export const router = createBrowserRouter([
