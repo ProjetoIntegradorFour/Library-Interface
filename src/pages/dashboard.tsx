@@ -1,6 +1,10 @@
 import "../styles/global.css";
 import Table from "../components/Table/Table";
 import LineChartLoans from "../components/LineGraph/LineChartLoans";
+import Card from "../components/Card/Card";
+
+import warningLogo from "../assets/img/warningLogo.png";
+import bookLogo from "../assets/img/bookLogo.png";
 
 const LoanData = [
   { month: "Janeiro", amount: 5000 },
@@ -16,13 +20,10 @@ export default function Dashboard() {
   return (
     <div
       className="dashboard-page"
-      style={{
-        padding: "10px",
-        backgroundColor: "lightblue",
-        marginTop: "50px",
-      }}
     >
-      <h1>🚀 Testando Dashboard</h1>
+      {/*Card*/}
+      <Card title={"teste"} imageUrl={warningLogo} line1={"teste"} line2={"teste"} line3={"teste"} />
+      <Card title={"teste"} imageUrl={bookLogo} line1={"teste"} line2={"teste"} line3={"teste"} />
 
       {/* Tabela */}
       <Table />
