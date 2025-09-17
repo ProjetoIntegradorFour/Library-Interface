@@ -18,18 +18,30 @@ const LoanData = [
 
 export default function Dashboard() {
   return (
-    <div
-      className="dashboard-page"
-    >
-      {/*Card*/}
-      <Card title={"teste"} imageUrl={warningLogo} line1={"teste"} line2={"teste"} line3={"teste"} />
-      <Card title={"teste"} imageUrl={bookLogo} line1={"teste"} line2={"teste"} line3={"teste"} />
+    <div className="dashboard-page">
+      {/* Coluna da esquerda */}
+      <div className="dashboard-left">
+        <Card
+          title={"Contagem"}
+          imageUrl={bookLogo}
+          line1={"456 Livros no total"}
+          line2={"23 Emprestados"}
+          line3={"1 Atrasados"}
+        />
+        <Card
+          title={"Avisos"}
+          imageUrl={warningLogo}
+          line1={"456 Lorem Ipsum"}
+          line2={"23 Lorem Ipsum"}
+          line3={"1 Lorem Ipsum"}
+        />
+      </div>
 
-      {/* Tabela */}
-      <Table />
-
-      {/* Gráfico */}
-      <LineChartLoans data={LoanData} />
+      {/* Coluna da direita */}
+      <div className="dashboard-right">
+        <Table />
+        <LineChartLoans data={LoanData} />
+      </div>
     </div>
   );
 }
