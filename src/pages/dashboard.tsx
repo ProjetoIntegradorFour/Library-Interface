@@ -5,6 +5,8 @@ import Card from "../components/Card/Card";
 
 import warningLogo from "../assets/img/warningLogo.png";
 import bookLogo from "../assets/img/bookLogo.png";
+import userLogo from "../assets/img/userLogo.png";
+import moneyLogo from "../assets/img/moneyLogo.png";
 
 const LoanData = [
   { month: "Janeiro", amount: 5000 },
@@ -31,6 +33,20 @@ export default function Dashboard() {
         <Card
           title={"Avisos"}
           imageUrl={warningLogo}
+          line1={"456 Lorem Ipsum"}
+          line2={"23 Lorem Ipsum"}
+          line3={"1 Lorem Ipsum"}
+        />
+        <Card
+          title={"Usuários"}
+          imageUrl={userLogo}
+          line1={"456 Lorem Ipsum"}
+          line2={"23 Lorem Ipsum"}
+          line3={"1 Lorem Ipsum"}
+        />
+        <Card
+          title={"Pagamentos"}
+          imageUrl={moneyLogo}
           line1={"456 Lorem Ipsum"}
           line2={"23 Lorem Ipsum"}
           line3={"1 Lorem Ipsum"}

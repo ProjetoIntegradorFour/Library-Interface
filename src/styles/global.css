@@ -15,7 +15,7 @@
 }
 .dashboard-page {
   margin-left: 350px;              /* mesma largura da sidebar (350px) */
-  padding: 120px 48px 48px;        /* top = 100px do header + folga */
+  padding: 0px 48px 48px;        /* top = 100px do header + folga */
   display: grid;
   grid-template-columns: 320px 1fr; /* coluna esquerda fixa para cards, direita flexível */
   gap: 28px;
@@ -66,7 +66,7 @@
 .dashboard-right {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 60px;
   align-items: stretch;
 }
 
@@ -74,7 +74,7 @@
 .dashboard-right .custom-table-container {
   width: 100%;
   max-width: 980px;      /* evita que a tabela estique demais */
-  margin: 0 0 0 40px;    /* desloca levemente para a direita, como no mock */
+  margin: 25px 0 0 40px;    /* desloca levemente para a direita, como no mock */
   align-self: start;
   box-sizing: border-box;
 }
@@ -112,7 +112,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: calc(100% - 80px); /* deixa folga lateral igual à tabela */
+  width: calc(100% - 65px); /* deixa folga lateral igual à tabela */
   margin-left: 40px;        /* alinha com a tabela acima */
   box-sizing: border-box;
   min-height: 300px;
@@ -120,9 +120,9 @@
 
 /* container branco interno com sombra (igual ao mock) */
 .dashboard-right .line-chart-container {
-  width: 92%;
-  max-width: 920px;
-  height: 320px;
+  width: 100%;
+  max-width: 1200px;
+  height: 400px;
   background: #fff;
   border-radius: 6px;
   padding: 10px;
