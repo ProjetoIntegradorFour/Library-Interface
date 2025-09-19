@@ -6,7 +6,7 @@
 .loan-page,
 .profile-page {
   margin-left: 260px; 
-  padding: 20px;
+  padding: 2z0px;
   display: flex;
   justify-content: right;
   align-items: center; 
@@ -28,7 +28,7 @@
 .dashboard-left {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 45px;
   align-items: flex-start;
   padding-left: 6px; /* alinha levemente com a borda */
 }
@@ -66,14 +66,14 @@
 .dashboard-right {
   display: flex;
   flex-direction: column;
-  gap: 60px;
+  gap: 25px;
   align-items: stretch;
 }
 
 /* Faz a tabela ficar alinhada ao topo da coluna direita e com deslocamento à direita */
 .dashboard-right .custom-table-container {
   width: 100%;
-  max-width: 980px;      /* evita que a tabela estique demais */
+  max-width: 1030px;      /* evita que a tabela estique demais */
   margin: 25px 0 0 40px;    /* desloca levemente para a direita, como no mock */
   align-self: start;
   box-sizing: border-box;
@@ -105,27 +105,26 @@
 /* ---------- Gráfico: fundo cinza arredondado e container branco centralizado ---------- */
 /* Override do margin-top excessivo vindo do componente */
 .dashboard-right .line-chart-wrapper {
-  margin-top: 0 !important;
+  margin-top: 20px;              /* dá um espaçamento controlado */
   background-color: #9AA6BF;
   border-radius: 12px;
-  padding: 22px 28px;
+  padding: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: calc(100% - 65px); /* deixa folga lateral igual à tabela */
-  margin-left: 40px;        /* alinha com a tabela acima */
+  width: 100%;                   /* ocupa toda a largura da coluna */
+  max-width: 1030px;             /* segue limite da tabela */
+  margin-left: 40px;             /* alinha com a tabela */
   box-sizing: border-box;
-  min-height: 300px;
+  min-height: 350px;             /* altura mais confortável */
 }
 
-/* container branco interno com sombra (igual ao mock) */
 .dashboard-right .line-chart-container {
-  width: 100%;
-  max-width: 1200px;
-  height: 400px;
+  width: 100%;                   /* acompanha o wrapper */
+  height: 500px;                 /* gráfico mais alto */
   background: #fff;
   border-radius: 6px;
-  padding: 10px;
+  padding: 16px;
   box-shadow: 0 6px 14px rgba(0,0,0,0.08);
   box-sizing: border-box;
 }

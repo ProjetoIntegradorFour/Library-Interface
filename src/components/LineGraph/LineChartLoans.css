@@ -1,19 +1,19 @@
 .line-chart-wrapper {
-  margin-top: 500px;
-  background-color: #9AA6BF; /* cinza claro em volta do componente */
+  margin-top: 40px; /* ajusta melhor a distância em vez de 500px */
+  background-color: #9AA6BF;
   border-radius: 12px;
-  display: flex;           
+  display: flex;
   justify-content: center;
   align-items: center;
-  width: 55%;               
-  min-height: 50vh;          
+  width: 100%;              /* ocupa toda a largura da coluna */
+  min-height: 50vh;
   box-sizing: border-box;
 }
 
 .line-chart-container {
-  background-color: #ffffff; /* fundo branco do gráfico */
+  background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  width: 45vw;               
-  height: 45vh;              
+  width: 100%;              /* ocupa todo o espaço do wrapper */
+  height: 45vh;
 }
