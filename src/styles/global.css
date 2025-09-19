@@ -5,13 +5,10 @@
 .dashboard-page,
 .loan-page,
 .profile-page {
-  margin-left: 260px; 
-  padding: 2z0px;
-  display: flex;
-  justify-content: right;
-  align-items: center; 
-  height: 60px; 
+  margin-left: 400px; 
+  padding: 10px; /* corrigido */
   box-sizing: border-box;
+  display: block; /* altera flex para block para que a tabela ocupe toda largura */
 }
 .dashboard-page {
   margin-left: 350px;              /* mesma largura da sidebar (350px) */
