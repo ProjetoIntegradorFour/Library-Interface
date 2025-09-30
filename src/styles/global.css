@@ -11,12 +11,22 @@
   display: block; /* altera flex para block para que a tabela ocupe toda largura */
 }
 .dashboard-page {
+  margin-top: -20px;
   margin-left: 350px;              /* mesma largura da sidebar (350px) */
-  padding: 0px 48px 48px;        /* top = 100px do header + folga */
+  padding: 0px 40px 40px;        /* top = 100px do header + folga */
   display: grid;
   grid-template-columns: 320px 1fr; /* coluna esquerda fixa para cards, direita flexível */
   gap: 28px;
   align-items: start;
+  min-height: calc(100vh - 120px);
+  box-sizing: border-box;
+}
+
+.archive-page {
+  margin-top: -50px;
+  margin-left: 380px;            /* mesma largura da sidebar (350px) */
+  padding: 0px 40px 40px;        /* top = 100px do header + folga */
+  display: block;
   min-height: calc(100vh - 120px);
   box-sizing: border-box;
 }
@@ -63,15 +73,15 @@
 .dashboard-right {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 10px;
   align-items: stretch;
 }
 
 /* Faz a tabela ficar alinhada ao topo da coluna direita e com deslocamento à direita */
 .dashboard-right .custom-table-container {
   width: 100%;
-  max-width: 1030px;      /* evita que a tabela estique demais */
-  margin: 25px 0 0 40px;    /* desloca levemente para a direita, como no mock */
+  max-width: 1025px;      /* evita que a tabela estique demais */
+  margin: 0px 0 0 40px;    /* desloca levemente para a direita, como no mock */
   align-self: start;
   box-sizing: border-box;
 }
@@ -102,7 +112,7 @@
 /* ---------- Gráfico: fundo cinza arredondado e container branco centralizado ---------- */
 /* Override do margin-top excessivo vindo do componente */
 .dashboard-right .line-chart-wrapper {
-  margin-top: 20px;              /* dá um espaçamento controlado */
+  margin-top: 10px;              /* dá um espaçamento controlado */
   background-color: #9AA6BF;
   border-radius: 12px;
   padding: 20px;

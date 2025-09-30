@@ -163,6 +163,7 @@ const TablePage: React.FC = () => {
   return (
     <div className="table-page-container">
       <div className="table-header">
+          <div className="header-buttons-container">
         <div className="table-controls">
           <div className="search-container">
             <input 
@@ -224,9 +225,7 @@ const TablePage: React.FC = () => {
             )}
           </div>
         </div>
-      </div>
-
-      <div className="table-buttons">
+        <div className="table-buttons">
         <button className="add-btn" onClick={handleAddRow}>
           <img src={plusIcon} alt="Adicionar" className="button-icon" />
         </button>
@@ -234,7 +233,15 @@ const TablePage: React.FC = () => {
           <img src={trashIcon} alt="Deletar" className="button-icon" />
         </button>
       </div>
+      </div>
+      </div>
 
+         
+      
+
+      
+      
+      <div className="table-wrapper">
       <table className="custom-table">
         <thead>
           <tr>
@@ -272,6 +279,7 @@ const TablePage: React.FC = () => {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 };

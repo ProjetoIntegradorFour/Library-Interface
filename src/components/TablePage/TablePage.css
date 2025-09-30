@@ -147,11 +147,17 @@
   background-color: #f0f4f9;
 }
 
+.header-buttons-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 940px
+}
+
 .table-buttons {
   display: flex;
-  justify-content: flex-end;
   gap: 12px;
-  margin-bottom: 15px;
 }
 
 .add-btn,
@@ -194,37 +200,62 @@
 
 .custom-table {
   width: 100%;
-  border-collapse: separate;
+  border-collapse: collapse;
   border-spacing: 0;
   border-radius: 8px;
-  overflow: hidden;
   background-color: white;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
+.table-wrapper {
+  width: 100%;
+  max-height: 800px;
+}
+
+.table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-wrapper tbody {
+  display: block;
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+.table-wrapper thead, .table-wrapper tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
 .custom-table th {
+  position: sticky;
+  top: 0;
   background-color: #4682B4;
   color: white;
-  padding: 12px 15px;
-  text-align: left;
+  z-index: 2;
+  padding: 12px 4px;
+  text-align: start;
   font-weight: 600;
   font-size: 14px;
   border: none;
 }
 
 .custom-table th:first-child {
-  width: 40px;
+  width: 50px;
   text-align: center;
 }
 
 .custom-table td {
-  padding: 12px 15px;
+  padding: 10px 0px;
   border-bottom: 1px solid #e9eef4;
-  font-size: 14px;
+  font-size: 15px;
+  text-align: start;
 }
 
 .custom-table td:first-child {
   text-align: center;
+  width: 60px;
 }
 
 .custom-table tr:nth-child(even) {
@@ -265,8 +296,8 @@
   }
   
   .table-controls {
-    width: 100%;
-    justify-content: space-between;
+    display: flex;
+    gap: 12px;
   }
   
   .search-container input {
