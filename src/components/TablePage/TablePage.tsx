@@ -50,6 +50,10 @@ const TablePage: React.FC = () => {
     autor: ""
   });
 
+  // Estados para paginação
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const rowsPerPage = 14;
+
   const filterRef = useRef<HTMLDivElement>(null);
 
   // Fechar o pop-up de filtro ao clicar fora dele
@@ -70,7 +74,6 @@ const TablePage: React.FC = () => {
   useEffect(() => {
     let result = initialBooks;
     
-    // Aplicar filtros
     if (filters.id) {
       result = result.filter(book => book.id.toString().includes(filters.id));
     }
@@ -86,7 +89,6 @@ const TablePage: React.FC = () => {
         book.autor.toLowerCase().includes(filters.autor.toLowerCase()));
     }
     
-    // Aplicar pesquisa geral
     if (searchTerm) {
       result = result.filter(book => 
         book.id.toString().includes(searchTerm) ||
@@ -97,7 +99,14 @@ const TablePage: React.FC = () => {
     }
     
     setFilteredBooks(result);
+    setCurrentPage(1); // resetar para primeira página ao aplicar filtro
   }, [searchTerm, filters]);
+
+  // Paginação: calcular índices
+  const indexOfLastRow = currentPage * rowsPerPage;
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const currentRows = filteredBooks.slice(indexOfFirstRow, indexOfLastRow);
+  const totalPages = Math.ceil(filteredBooks.length / rowsPerPage);
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -122,7 +131,7 @@ const TablePage: React.FC = () => {
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      setSelectedRows(filteredBooks.map(book => book.id));
+      setSelectedRows(currentRows.map(book => book.id));
     } else {
       setSelectedRows([]);
     }
@@ -163,122 +172,132 @@ const TablePage: React.FC = () => {
   return (
     <div className="table-page-container">
       <div className="table-header">
-          <div className="header-buttons-container">
-        <div className="table-controls">
-          <div className="search-container">
-            <input 
-              type="text" 
-              placeholder="Procura" 
-              onKeyDown={handleSearch}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        <div className="header-buttons-container">
+          <div className="table-controls">
+            <div className="search-container">
+              <input 
+                type="text" 
+                placeholder="Procura" 
+                onKeyDown={handleSearch}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className="filter-container" ref={filterRef}>
+              <button onClick={() => setShowFilter(!showFilter)}>Filter</button>
+              {showFilter && (
+                <div className="filter-popup">
+                  <div className="filter-header">
+                    <h3>Filtrar por</h3>
+                    <button onClick={() => setShowFilter(false)}>X</button>
+                  </div>
+                  <div className="filter-fields">
+                    <div className="filter-field">
+                      <label>ID</label>
+                      <input 
+                        type="text" 
+                        value={filters.id}
+                        onChange={(e) => handleFilterChange('id', e.target.value)}
+                      />
+                    </div>
+                    <div className="filter-field">
+                      <label>CDD / CDU</label>
+                      <input 
+                        type="text" 
+                        value={filters.cdd}
+                        onChange={(e) => handleFilterChange('cdd', e.target.value)}
+                      />
+                    </div>
+                    <div className="filter-field">
+                      <label>Título</label>
+                      <input 
+                        type="text" 
+                        value={filters.titulo}
+                        onChange={(e) => handleFilterChange('titulo', e.target.value)}
+                      />
+                    </div>
+                    <div className="filter-field">
+                      <label>Autor</label>
+                      <input 
+                        type="text" 
+                        value={filters.autor}
+                        onChange={(e) => handleFilterChange('autor', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="filter-actions">
+                    <button onClick={clearFilters}>Limpar Filtros</button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-          <div className="filter-container" ref={filterRef}>
-            <button onClick={() => setShowFilter(!showFilter)}>Filter</button>
-            {showFilter && (
-              <div className="filter-popup">
-                <div className="filter-header">
-                  <h3>Filtrar por</h3>
-                  <button onClick={() => setShowFilter(false)}>X</button>
-                </div>
-                <div className="filter-fields">
-                  <div className="filter-field">
-                    <label>ID</label>
-                    <input 
-                      type="text" 
-                      value={filters.id}
-                      onChange={(e) => handleFilterChange('id', e.target.value)}
-                    />
-                  </div>
-                  <div className="filter-field">
-                    <label>CDD / CDU</label>
-                    <input 
-                      type="text" 
-                      value={filters.cdd}
-                      onChange={(e) => handleFilterChange('cdd', e.target.value)}
-                    />
-                  </div>
-                  <div className="filter-field">
-                    <label>Título</label>
-                    <input 
-                      type="text" 
-                      value={filters.titulo}
-                      onChange={(e) => handleFilterChange('titulo', e.target.value)}
-                    />
-                  </div>
-                  <div className="filter-field">
-                    <label>Autor</label>
-                    <input 
-                      type="text" 
-                      value={filters.autor}
-                      onChange={(e) => handleFilterChange('autor', e.target.value)}
-                    />
-                  </div>
-                </div>
-                <div className="filter-actions">
-                  <button onClick={clearFilters}>
-                    Limpar Filtros
-                  </button>
-                </div>
-              </div>
-            )}
+          <div className="table-buttons">
+            <button className="add-btn" onClick={handleAddRow}>
+              <img src={plusIcon} alt="Adicionar" className="button-icon" />
+            </button>
+            <button className="delete-btn" onClick={handleDeleteRows}>
+              <img src={trashIcon} alt="Deletar" className="button-icon" />
+            </button>
           </div>
         </div>
-        <div className="table-buttons">
-        <button className="add-btn" onClick={handleAddRow}>
-          <img src={plusIcon} alt="Adicionar" className="button-icon" />
-        </button>
-        <button className="delete-btn" onClick={handleDeleteRows}>
-          <img src={trashIcon} alt="Deletar" className="button-icon" />
-        </button>
-      </div>
-      </div>
       </div>
 
-         
-      
-
-      
-      
       <div className="table-wrapper">
-      <table className="custom-table">
-        <thead>
-          <tr>
-            <th>
-              <input 
-                type="checkbox" 
-                onChange={handleSelectAll}
-                checked={selectedRows.length === filteredBooks.length && filteredBooks.length > 0}
-              />
-            </th>
-            <th>ID</th>
-            <th>CDD / CDU</th>
-            <th>TÍTULO</th>
-            <th>AUTOR</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredBooks.map((book) => (
-            <tr 
-              key={book.id} 
-              className={selectedRows.includes(book.id) ? 'selected' : ''}
-            >
-              <td>
+        <table className="custom-table">
+          <thead>
+            <tr>
+              <th>
                 <input 
                   type="checkbox" 
-                  checked={selectedRows.includes(book.id)}
-                  onChange={() => handleRowSelect(book.id)}
+                  onChange={handleSelectAll}
+                  checked={selectedRows.length === currentRows.length && currentRows.length > 0}
                 />
-              </td>
-              <td>{book.id}</td>
-              <td>{book.cdd}</td>
-              <td>{book.titulo}</td>
-              <td>{book.autor}</td>
+              </th>
+              <th>ID</th>
+              <th>CDD / CDU</th>
+              <th>TÍTULO</th>
+              <th>AUTOR</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {currentRows.map((book) => (
+              <tr 
+                key={book.id} 
+                className={selectedRows.includes(book.id) ? 'selected' : ''}
+              >
+                <td>
+                  <input 
+                    type="checkbox" 
+                    checked={selectedRows.includes(book.id)}
+                    onChange={() => handleRowSelect(book.id)}
+                  />
+                </td>
+                <td>{book.id}</td>
+                <td>{book.cdd}</td>
+                <td>{book.titulo}</td>
+                <td>{book.autor}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Controles de Paginação */}
+      <div className="pagination">
+        <span>Página {currentPage} de {totalPages}</span>
+        <button 
+          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Anterior
+        </button>
+        <button 
+          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+        >
+          Próxima
+        </button>
       </div>
     </div>
   );
