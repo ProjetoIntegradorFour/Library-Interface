@@ -1,21 +1,21 @@
 import { createBrowserRouter, Outlet, useNavigate } from "react-router-dom";
 import { Dashboard, Login, Acervo, Emprestimos, Atrasos, Relatorios, Perfil, Configuracao } from "../pages";
 import { useEffect } from "react";
-import { AmILogged } from "../service/auth/authCheck";
+import { HasEnvBypass } from "../service/auth/authService";
 import Header from "../components/Header/Header";
 import Sidebar from "../components/Sidebar/Sidebar";
 function ProtectedLayout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!AmILogged()) {
+    if (!HasEnvBypass()) {
       navigate("/login", { replace: true });
     } else {
       navigate("/", { replace: true });
     }
   }, [navigate]);
 
-  if (!AmILogged()) return null;
+  if (!HasEnvBypass()) return null;
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar />
