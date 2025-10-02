@@ -1,9 +1,9 @@
-const API_URL = "http://localhost:8080/auth/signin";
+const API_URL = "http://localhost:8080/api/auth/signin";
 
 export const login = async (cpf: string, password: string) => {
   const response = await fetch(API_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", 'Accept': 'application/json' },
     body: JSON.stringify({ cpf, password }),
   });
 
@@ -18,7 +18,7 @@ export const login = async (cpf: string, password: string) => {
   return data;
 };
 
-export const HasEnvBypass = () => {
+export const HasEnvBypass = async () => {
   if (import.meta.env.VITE_BYPASS_AUTH === "true") return true;
   
   const token = localStorage.getItem("token");

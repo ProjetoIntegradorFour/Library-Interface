@@ -7,25 +7,23 @@ import Sidebar from "../components/Sidebar/Sidebar";
 
 function ProtectedLayout() {
   const navigate = useNavigate();
-  const [isChecking, setIsChecking] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const isAuthenticated = await HasEnvBypass();
+      const authStatus = await HasEnvBypass();
+      setIsAuthenticated(authStatus);
 
-      if (!isAuthenticated) {
+      if (!authStatus) {
         navigate("/login", { replace: true });
-      } else {
-        navigate("/", { replace: true });
       }
-      setIsChecking(false);
     };
 
     checkAuth();
   }, [navigate]);
 
-  if (isChecking) return <div>Loading...</div>;
-  if (!HasEnvBypass()) return null;
+  if (isAuthenticated === null) return <div>Loading...</div>;
+  if (!isAuthenticated) return null;
 
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
