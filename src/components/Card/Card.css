@@ -37,7 +37,6 @@
 .card-content {
   width: 66.666%; 
   padding: 1rem; 
-  display: flex;
   flex-direction: column;
   justify-content: space-between;
   color: #ffffff; 

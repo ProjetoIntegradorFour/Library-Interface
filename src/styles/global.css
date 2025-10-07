@@ -5,11 +5,154 @@
 .dashboard-page,
 .loan-page,
 .profile-page {
-  margin-left: 260px; 
+  margin-left: 400px; 
+  padding: 10px; /* corrigido */
+  box-sizing: border-box;
+  display: block; /* altera flex para block para que a tabela ocupe toda largura */
+}
+.dashboard-page {
+  margin-top: -20px;
+  margin-left: 350px;              /* mesma largura da sidebar (350px) */
+  padding: 0px 40px 40px;        /* top = 100px do header + folga */
+  display: grid;
+  grid-template-columns: 320px 1fr; /* coluna esquerda fixa para cards, direita flexível */
+  gap: 28px;
+  align-items: start;
+  min-height: calc(100vh - 120px);
+  box-sizing: border-box;
+}
+
+.archive-page {
+  margin-top: -50px;
+  margin-left: 380px;            /* mesma largura da sidebar (350px) */
+  padding: 0px 40px 40px;        /* top = 100px do header + folga */
+  display: block;
+  min-height: calc(100vh - 120px);
+  box-sizing: border-box;
+}
+
+/* ---------- Coluna esquerda: cards ---------- */
+.dashboard-left {
+  display: flex;
+  flex-direction: column;
+  gap: 45px;
+  align-items: flex-start;
+  padding-left: 6px; /* alinha levemente com a borda */
+}
+
+/* Ajustes visuais para os titles dos cards (ex.: "Contagem", "Avisos") */
+.dashboard-left .card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: #1f2b38;
+}
+
+/* Força largura/altura dos cards para que fiquem iguais ao mock */
+.dashboard-left .card-container,
+.dashboard-left .card {
+  width: 300px;          /* largura parecida com o mock */
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.dashboard-left .card {
+  height: 150px;          /* altura menor e consistente */
+  border-radius: 10px;
+  padding: 8px;
+}
+
+/* Imagem menor dentro do card para equilibrar com o texto */
+.dashboard-left .card-image img {
+  max-width: 70%;
+  max-height: 70%;
+  object-fit: contain;
+}
+
+/* ---------- Coluna direita: tabela + gráfico ---------- */
+.dashboard-right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+
+/* Faz a tabela ficar alinhada ao topo da coluna direita e com deslocamento à direita */
+.dashboard-right .custom-table-container {
+  width: 100%;
+  max-width: 1025px;      /* evita que a tabela estique demais */
+  margin: 0px 0 0 40px;    /* desloca levemente para a direita, como no mock */
+  align-self: start;
+  box-sizing: border-box;
+}
+
+/* Aparência do cabeçalho da tabela (tinta azulada) */
+.dashboard-right .custom-table th {
+  background-color: #97a6bb; /* tom próximo ao mock */
+  color: #fff;
+  padding: 10px 14px;
+  font-weight: 700;
+}
+
+/* Células e espaçamento */
+.dashboard-right .custom-table td {
+  padding: 10px 14px;
+}
+
+/* Destaque visual de linhas parecidas com o mock */
+.dashboard-right .custom-table tr:nth-child(even) {
+  background-color: #e9eef4;
+}
+
+/* Coluna esquerda (Id) mais forte, igual ao design */
+.dashboard-right .custom-table tbody tr td:first-child {
+  font-weight: 700;
+}
+
+/* ---------- Gráfico: fundo cinza arredondado e container branco centralizado ---------- */
+/* Override do margin-top excessivo vindo do componente */
+.dashboard-right .line-chart-wrapper {
+  margin-top: 10px;              /* dá um espaçamento controlado */
+  background-color: #9AA6BF;
+  border-radius: 12px;
   padding: 20px;
   display: flex;
-  justify-content: center; 
-  align-items: center; 
-  height: 60px; 
+  justify-content: center;
+  align-items: center;
+  width: 100%;                   /* ocupa toda a largura da coluna */
+  max-width: 1030px;             /* segue limite da tabela */
+  margin-left: 40px;             /* alinha com a tabela */
   box-sizing: border-box;
+  min-height: 350px;             /* altura mais confortável */
+}
+
+.dashboard-right .line-chart-container {
+  width: 100%;                   /* acompanha o wrapper */
+  height: 500px;                 /* gráfico mais alto */
+  background: #fff;
+  border-radius: 6px;
+  padding: 16px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+  box-sizing: border-box;
+}
+
+/* Pequenos ajustes responsivos */
+@media (max-width: 1100px) {
+  .dashboard-page {
+    margin-left: 0;
+    padding-left: 20px;
+    grid-template-columns: 1fr;
+    padding-top: 140px;
+  }
+
+  .dashboard-left,
+  .dashboard-right .custom-table-container,
+  .dashboard-right .line-chart-wrapper {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .dashboard-left {
+    align-items: center;
+  }
 }
