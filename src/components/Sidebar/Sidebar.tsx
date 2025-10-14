@@ -1,4 +1,7 @@
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { fetchAllowedRoutes } from "../../service/routerService";
+import { HasEnvBypass } from "../../service/authService";
 import "./Sidebar.css";
 
 import dashboardIcon from "../../assets/img/dashboard.png";
@@ -9,66 +12,51 @@ import relatoriosIcon from "../../assets/img/document.png";
 import perfilIcon from "../../assets/img/perfil.png";
 import configIcon from "../../assets/img/configuracoes.png";
 
+const allRoutes = [
+  { path: "/", label: "Dashboard", icon: dashboardIcon },
+  { path: "/acervo", label: "Acervo", icon: acervoIcon },
+  { path: "/emprestimos", label: "Empréstimos", icon: emprestimosIcon },
+  { path: "/atrasos", label: "Atrasos/Pagamentos", icon: atrasosIcon },
+  { path: "/relatorios", label: "Relatórios", icon: relatoriosIcon },
+  { path: "/perfil", label: "Perfil", icon: perfilIcon },
+  { path: "/configuracao", label: "Configurações", icon: configIcon },
+];
+
 export default function Sidebar() {
+  const [allowed, setAllowed] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadAllowed = async () => {
+      const envBypass = await HasEnvBypass();
+
+      if (envBypass) {
+        console.log("⚙️ EnvBypass active — showing all routes.");
+        setAllowed(allRoutes.map((r) => r.path));
+      } else {
+        const routes = await fetchAllowedRoutes();
+        setAllowed(routes);
+      }
+    };
+
+    loadAllowed();
+  }, []);
+
   return (
     <aside className="sidebar">
-      <NavLink
-        to="/"
-        className={({ isActive }) => `menu-item ${isActive ? "active" : ""}`}
-      >
-        <img src={dashboardIcon} alt="Dashboard" className="icon" />
-        Dashboard
-      </NavLink>
-
-      <NavLink
-        to="/acervo"
-        className={({ isActive }) => `menu-item ${isActive ? "active" : ""}`}
-      >
-        <img src={acervoIcon} alt="Acervo" className="icon" />
-        Acervo
-      </NavLink>
-
-      <NavLink
-        to="/emprestimos"
-        className={({ isActive }) => `menu-item ${isActive ? "active" : ""}`}
-      >
-        <img src={emprestimosIcon} alt="Empréstimos" className="icon" />
-        Empréstimos
-      </NavLink>
-
-      <NavLink
-        to="/atrasos"
-        className={({ isActive }) => `menu-item ${isActive ? "active" : ""}`}
-      >
-        <img src={atrasosIcon} alt="Atrasos/Pagamentos" className="icon" />
-        Atrasos/Pagamentos
-      </NavLink>
-
-      <NavLink
-        to="/relatorios"
-        className={({ isActive }) => `menu-item ${isActive ? "active" : ""}`}
-      >
-        <img src={relatoriosIcon} alt="Relatórios" className="icon" />
-        Relatórios
-      </NavLink>
- 
-      <div className="menu-bottom">
-        <NavLink
-          to="/perfil"
-          className={({ isActive }) => `mini-item ${isActive ? "active" : ""}`}
-        >
-          <img src={perfilIcon} alt="Perfil" className="mini-icon" />
-        </NavLink>
-
-        <NavLink
-          to="/configuracao"
-          className={({ isActive }) => `mini-item ${isActive ? "active" : ""}`}
-        >
-          <img src={configIcon} alt="Configurações" className="mini-icon" />
-        </NavLink>
-      </div>
-      </aside>  
+      {allRoutes
+        .filter((route) => allowed.includes(route.path))
+        .map((route) => (
+          <NavLink
+            key={route.path}
+            to={route.path}
+            className={({ isActive }) =>
+              `menu-item ${isActive ? "active" : ""}`
+            }
+          >
+            <img src={route.icon} alt={route.label} className="icon" />
+            {route.label}
+          </NavLink>
+        ))}
+    </aside>
   );
 }
-
-

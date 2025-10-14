@@ -1,29 +1,40 @@
 import { createBrowserRouter, Outlet, useNavigate } from "react-router-dom";
 import { Dashboard, Login, Acervo, Emprestimos, Atrasos, Relatorios, Perfil, Configuracao } from "../pages";
 import { useEffect, useState } from "react";
-import { HasEnvBypass } from "../service/auth/authService";
+import { HasEnvBypass } from "../service/authService";
+import { canAccessRoute } from "../service/routerService";
 import Header from "../components/Header/Header";
 import Sidebar from "../components/Sidebar/Sidebar";
 
 function ProtectedLayout() {
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const authStatus = await HasEnvBypass();
-      setIsAuthenticated(authStatus);
+    const checkAccess = async () => {
+      const envBypass = await HasEnvBypass();
 
-      if (!authStatus) {
+      if (envBypass) {
+        console.log("⚙️ EnvBypass active — skipping backend route check.");
+        setIsAuthorized(true);
+        return;
+      }
+
+      const path = window.location.pathname;
+      const allowed = await canAccessRoute(path);
+      setIsAuthorized(allowed);
+
+      if (!allowed) {
         navigate("/login", { replace: true });
       }
     };
 
-    checkAuth();
+    checkAccess();
   }, [navigate]);
 
-  if (isAuthenticated === null) return <div>Loading...</div>;
-  if (!isAuthenticated) return null;
+
+  if (isAuthorized === null) return <div>Loading...</div>;
+  if (!isAuthorized) return null;
 
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
@@ -39,10 +50,7 @@ function ProtectedLayout() {
 }
 
 export const router = createBrowserRouter([
-  {
-    path: "/login",
-    element: <Login />,
-  },
+  { path: "/login", element: <Login /> },
   {
     element: <ProtectedLayout />,
     children: [

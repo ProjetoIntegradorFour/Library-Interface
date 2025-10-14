@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "../styles/login.css";
-import * as authService from "../service/auth/authService";
+import * as authService from "../service/authService";
 
 export default function Login() {
   const [cpf, setCpf] = useState("");
