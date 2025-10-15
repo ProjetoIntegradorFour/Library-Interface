@@ -18,9 +18,8 @@ export const login = async (cpf: string, password: string) => {
   return data;
 };
 
-export const HasEnvBypass = async () => {
-  if (import.meta.env.VITE_BYPASS_AUTH === "true") return true;
-  
-  const token = localStorage.getItem("token");
-  return token !== null;
-};
+export async function HasEnvBypass(): Promise<boolean> {
+  const raw = import.meta.env.VITE_BYPASS_AUTH;
+  console.log("VITE_BYPASS_AUTH raw value:", raw);
+  return raw === "true";
+}
