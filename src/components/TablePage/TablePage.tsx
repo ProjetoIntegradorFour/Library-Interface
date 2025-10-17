@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./TablePage.css";
 
 import plusIcon from "../../assets/img/plus.png";
 import trashIcon from "../../assets/img/trash.png";
+import editIcon from "../../assets/img/edit.png";
 
 interface Book {
   id: number;
@@ -18,155 +19,165 @@ interface FilterState {
   autor: string;
 }
 
-const initialBooks: Book[] = [
-  { id: 1, cdd: "020", titulo: "Introdução à Biblioteconomia", autor: "Maria Souza" },
-  { id: 2, cdd: "510", titulo: "Fundamentos de Álgebra", autor: "João Pereira" },
-  { id: 3, cdd: "820", titulo: "Contos Modernos", autor: "Ana Lima" },
-  { id: 4, cdd: "460", titulo: "Redes de Computadores", autor: "Carlos Mendes" },
-  { id: 5, cdd: "370", titulo: "Educação e Sociedade", autor: "Fernanda Alves" },
-  { id: 6, cdd: "610", titulo: "Anatomia Humana", autor: "Ricardo Oliveira" },
-  { id: 7, cdd: "330", titulo: "Economia Global", autor: "Beatriz Santos" },
-  { id: 8, cdd: "540", titulo: "Química Experimental", autor: "Paulo Fernandes" },
-  { id: 9, cdd: "910", titulo: "Atlas Geográfico", autor: "Júlia Martins" },
-  { id: 10, cdd: "621", titulo: "Eletrônica Aplicada", autor: "Marcelo Costa" },
-  { id: 11, cdd: "150", titulo: "Psicologia Cognitiva", autor: "Camila Rocha" },
-  { id: 12, cdd: "700", titulo: "História da Arte", autor: "Rodrigo Moreira" },
-  { id: 13, cdd: "780", titulo: "Teoria Musical", autor: "Patrícia Nogueira" },
-  { id: 14, cdd: "300", titulo: "Introdução às Ciências Sociais", autor: "Felipe Azevedo" },
-  { id: 15, cdd: "520", titulo: "Astronomia Básica", autor: "Larissa Carvalho" },
-  { id: 16, cdd: "860", titulo: "Poesia Brasileira Contemporânea", autor: "Thiago Barros" },
-];
-
 const TablePage: React.FC = () => {
-  const [books, setBooks] = useState<Book[]>(initialBooks);
-  const [filteredBooks, setFilteredBooks] = useState<Book[]>(initialBooks);
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [books, setBooks] = useState<Book[]>([]);
+  const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [showFilter, setShowFilter] = useState<boolean>(false);
-  const [filters, setFilters] = useState<FilterState>({
-    id: "",
-    cdd: "",
-    titulo: "",
-    autor: ""
-  });
+  const [filters, setFilters] = useState<FilterState>({ id: "", cdd: "", titulo: "", autor: "" });
 
-  // Estados para paginação
+  const [showAddModal, setShowAddModal] = useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+
+  const [newBook, setNewBook] = useState<Omit<Book, "id">>({ cdd: "", titulo: "", autor: "" });
+
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editValues, setEditValues] = useState<Omit<Book, "id">>({ cdd: "", titulo: "", autor: "" });
+
+  // paginação
   const [currentPage, setCurrentPage] = useState<number>(1);
   const rowsPerPage = 14;
 
-  const filterRef = useRef<HTMLDivElement>(null);
+  const filterRef = useRef<HTMLDivElement | null>(null);
 
-  // Fechar o pop-up de filtro ao clicar fora dele
+  // load localStorage
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+    const stored = localStorage.getItem("books");
+    if (stored) {
+      const parsed: Book[] = JSON.parse(stored);
+      setBooks(parsed);
+      setFilteredBooks(parsed);
+    } else {
+      setBooks([]);
+      setFilteredBooks([]);
+    }
+  }, []);
+
+  // persist
+  useEffect(() => {
+    localStorage.setItem("books", JSON.stringify(books));
+  }, [books]);
+
+  // fechar filtro clicando fora
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
         setShowFilter(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Aplicar filtros e pesquisa
+  // aplicar filtros
   useEffect(() => {
-    let result = initialBooks;
-    
-    if (filters.id) {
-      result = result.filter(book => book.id.toString().includes(filters.id));
-    }
-    if (filters.cdd) {
-      result = result.filter(book => book.cdd.includes(filters.cdd));
-    }
-    if (filters.titulo) {
-      result = result.filter(book => 
-        book.titulo.toLowerCase().includes(filters.titulo.toLowerCase()));
-    }
-    if (filters.autor) {
-      result = result.filter(book => 
-        book.autor.toLowerCase().includes(filters.autor.toLowerCase()));
-    }
-    
-    if (searchTerm) {
-      result = result.filter(book => 
-        book.id.toString().includes(searchTerm) ||
-        book.cdd.includes(searchTerm) ||
-        book.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        book.autor.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+    let result = books.slice();
+    if (filters.id) result = result.filter(b => b.id.toString().includes(filters.id));
+    if (filters.cdd) result = result.filter(b => b.cdd.toLowerCase().includes(filters.cdd.toLowerCase()));
+    if (filters.titulo) result = result.filter(b => b.titulo.toLowerCase().includes(filters.titulo.toLowerCase()));
+    if (filters.autor) result = result.filter(b => b.autor.toLowerCase().includes(filters.autor.toLowerCase()));
     
     setFilteredBooks(result);
-    setCurrentPage(1); // resetar para primeira página ao aplicar filtro
-  }, [searchTerm, filters]);
+    setCurrentPage(1);
+  }, [books, filters]);
 
-  // Paginação: calcular índices
+  // paginação
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredBooks.slice(indexOfFirstRow, indexOfLastRow);
-  const totalPages = Math.ceil(filteredBooks.length / rowsPerPage);
+  const totalPages = Math.max(1, Math.ceil(filteredBooks.length / rowsPerPage));
 
-  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      setSearchTerm(e.currentTarget.value);
-    }
-  };
-
-  const handleFilterChange = (field: keyof FilterState, value: string) => {
-    setFilters(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
+  // seleção
   const handleRowSelect = (id: number) => {
-    if (selectedRows.includes(id)) {
-      setSelectedRows(selectedRows.filter(rowId => rowId !== id));
-    } else {
-      setSelectedRows([...selectedRows, id]);
-    }
+    setSelectedRows(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
   };
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      setSelectedRows(currentRows.map(book => book.id));
+    if (e.target.checked) setSelectedRows(currentRows.map(r => r.id));
+    else setSelectedRows([]);
+  };
+
+  // adicionar (abre modal)
+  const handleAddOpen = () => {
+    setNewBook({ cdd: "", titulo: "", autor: "" });
+    setShowAddModal(true);
+  };
+
+  const handleAddConfirm = () => {
+    if (!newBook.cdd.trim() || !newBook.titulo.trim() || !newBook.autor.trim()) {
+      alert("Preencha CDD, Título e Autor.");
+      return;
+    }
+    const newId = books.length > 0 ? Math.max(...books.map(b => b.id)) + 1 : 1;
+    const entry: Book = { id: newId, cdd: newBook.cdd.trim(), titulo: newBook.titulo.trim(), autor: newBook.autor.trim() };
+    const updated = [...books, entry];
+    setBooks(updated);
+    setShowAddModal(false);
+  };
+
+  const handleAddCancel = () => {
+    setShowAddModal(false);
+    setNewBook({ cdd: "", titulo: "", autor: "" });
+  };
+
+  // deletar (abre modal)
+  const handleDeleteOpen = () => {
+    if (selectedRows.length === 0) {
+      alert("Selecione ao menos uma linha para deletar.");
+      return;
+    }
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    const updated = books.filter(b => !selectedRows.includes(b.id));
+    setBooks(updated);
+    setSelectedRows([]);
+    setShowDeleteModal(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+  };
+
+  // editar: só quando uma linha selecionada
+  const handleEditToggle = () => {
+    if (editingId === null) {
+      // entrar em modo edição
+      if (selectedRows.length !== 1) {
+        alert("Selecione exatamente uma linha para editar.");
+        return;
+      }
+      const id = selectedRows[0];
+      const book = books.find(b => b.id === id)!;
+      setEditingId(id);
+      setEditValues({ cdd: book.cdd, titulo: book.titulo, autor: book.autor });
     } else {
+      // salvar edição
+      if (!editValues.cdd.trim() || !editValues.titulo.trim() || !editValues.autor.trim()) {
+        alert("Preencha CDD, Título e Autor.");
+        return;
+      }
+      const updated = books.map(b => (b.id === editingId ? { id: b.id, cdd: editValues.cdd.trim(), titulo: editValues.titulo.trim(), autor: editValues.autor.trim() } : b));
+      setBooks(updated);
+      setEditingId(null);
+      setEditValues({ cdd: "", titulo: "", autor: "" });
       setSelectedRows([]);
     }
   };
 
-  const handleAddRow = () => {
-    const newId = books.length > 0 ? Math.max(...books.map(book => book.id)) + 1 : 1;
-    const newBook: Book = {
-      id: newId,
-      cdd: "",
-      titulo: "",
-      autor: ""
-    };
-    const updatedBooks = [...books, newBook];
-    setBooks(updatedBooks);
-    setFilteredBooks(updatedBooks);
-  };
-
-  const handleDeleteRows = () => {
-    if (selectedRows.length === 0) return;
-    
-    const updatedBooks = books.filter(book => !selectedRows.includes(book.id));
-    setBooks(updatedBooks);
-    setFilteredBooks(updatedBooks);
+  const handleEditCancel = () => {
+    setEditingId(null);
+    setEditValues({ cdd: "", titulo: "", autor: "" });
     setSelectedRows([]);
   };
 
   const clearFilters = () => {
-    setFilters({
-      id: "",
-      cdd: "",
-      titulo: "",
-      autor: ""
-    });
-    setSearchTerm("");
+    setFilters({ id: "", cdd: "", titulo: "", autor: "" });
+  };
+
+  const hasActiveFilters = () => {
+    return filters.id !== "" || filters.cdd !== "" || filters.titulo !== "" || filters.autor !== "";
   };
 
   return (
@@ -174,71 +185,84 @@ const TablePage: React.FC = () => {
       <div className="table-header">
         <div className="header-buttons-container">
           <div className="table-controls">
-            <div className="search-container">
-              <input 
-                type="text" 
-                placeholder="Procura" 
-                onKeyDown={handleSearch}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
             <div className="filter-container" ref={filterRef}>
-              <button onClick={() => setShowFilter(!showFilter)}>Filter</button>
+              <button 
+                className={`filter-btn ${hasActiveFilters() ? 'active' : ''}`}
+                onClick={() => setShowFilter(!showFilter)}
+              >
+                Filter
+                {hasActiveFilters() && <span className="filter-indicator"></span>}
+              </button>
               {showFilter && (
                 <div className="filter-popup">
                   <div className="filter-header">
                     <h3>Filtrar por</h3>
-                    <button onClick={() => setShowFilter(false)}>X</button>
+                    <button className="close-filter-btn" onClick={() => setShowFilter(false)}>×</button>
                   </div>
                   <div className="filter-fields">
                     <div className="filter-field">
                       <label>ID</label>
                       <input 
                         type="text" 
-                        value={filters.id}
-                        onChange={(e) => handleFilterChange('id', e.target.value)}
+                        value={filters.id} 
+                        onChange={(e) => setFilters(prev => ({ ...prev, id: e.target.value }))}
+                        placeholder="Filtrar por ID"
                       />
                     </div>
                     <div className="filter-field">
                       <label>CDD / CDU</label>
                       <input 
                         type="text" 
-                        value={filters.cdd}
-                        onChange={(e) => handleFilterChange('cdd', e.target.value)}
+                        value={filters.cdd} 
+                        onChange={(e) => setFilters(prev => ({ ...prev, cdd: e.target.value }))}
+                        placeholder="Filtrar por CDD/CDU"
                       />
                     </div>
                     <div className="filter-field">
                       <label>Título</label>
                       <input 
                         type="text" 
-                        value={filters.titulo}
-                        onChange={(e) => handleFilterChange('titulo', e.target.value)}
+                        value={filters.titulo} 
+                        onChange={(e) => setFilters(prev => ({ ...prev, titulo: e.target.value }))}
+                        placeholder="Filtrar por título"
                       />
                     </div>
                     <div className="filter-field">
                       <label>Autor</label>
                       <input 
                         type="text" 
-                        value={filters.autor}
-                        onChange={(e) => handleFilterChange('autor', e.target.value)}
+                        value={filters.autor} 
+                        onChange={(e) => setFilters(prev => ({ ...prev, autor: e.target.value }))}
+                        placeholder="Filtrar por autor"
                       />
                     </div>
                   </div>
                   <div className="filter-actions">
-                    <button onClick={clearFilters}>Limpar Filtros</button>
+                    <button className="clear-filters-btn" onClick={clearFilters}>
+                      Limpar Filtros
+                    </button>
                   </div>
                 </div>
               )}
             </div>
           </div>
+
           <div className="table-buttons">
-            <button className="add-btn" onClick={handleAddRow}>
+            <button className="add-btn" onClick={handleAddOpen}>
               <img src={plusIcon} alt="Adicionar" className="button-icon" />
             </button>
-            <button className="delete-btn" onClick={handleDeleteRows}>
+
+            <button className="delete-btn" onClick={handleDeleteOpen}>
               <img src={trashIcon} alt="Deletar" className="button-icon" />
             </button>
+
+            <button className="edit-btn" onClick={handleEditToggle} title={editingId ? "Salvar edição" : "Editar selecionado"}>
+              <img src={editIcon} alt={editingId ? "Salvar" : "Editar"} className="button-icon" />
+            </button>
+
+            {editingId !== null && (
+              <button className="cancel-edit-btn" onClick={handleEditCancel}>Cancelar</button>
+            )}
           </div>
         </div>
       </div>
@@ -248,8 +272,8 @@ const TablePage: React.FC = () => {
           <thead>
             <tr>
               <th>
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   onChange={handleSelectAll}
                   checked={selectedRows.length === currentRows.length && currentRows.length > 0}
                 />
@@ -262,43 +286,112 @@ const TablePage: React.FC = () => {
           </thead>
           <tbody>
             {currentRows.map((book) => (
-              <tr 
-                key={book.id} 
-                className={selectedRows.includes(book.id) ? 'selected' : ''}
-              >
+              <tr key={book.id} className={selectedRows.includes(book.id) ? "selected" : ""}>
                 <td>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={selectedRows.includes(book.id)}
                     onChange={() => handleRowSelect(book.id)}
                   />
                 </td>
                 <td>{book.id}</td>
-                <td>{book.cdd}</td>
-                <td>{book.titulo}</td>
-                <td>{book.autor}</td>
+
+                <td>
+                  {editingId === book.id ? (
+                    <input className="inline-edit" value={editValues.cdd} onChange={(e) => setEditValues(prev => ({ ...prev, cdd: e.target.value }))} />
+                  ) : (
+                    book.cdd
+                  )}
+                </td>
+
+                <td>
+                  {editingId === book.id ? (
+                    <input className="inline-edit" value={editValues.titulo} onChange={(e) => setEditValues(prev => ({ ...prev, titulo: e.target.value }))} />
+                  ) : (
+                    book.titulo
+                  )}
+                </td>
+
+                <td>
+                  {editingId === book.id ? (
+                    <input className="inline-edit" value={editValues.autor} onChange={(e) => setEditValues(prev => ({ ...prev, autor: e.target.value }))} />
+                  ) : (
+                    book.autor
+                  )}
+                </td>
               </tr>
             ))}
+
+            {currentRows.length === 0 && (
+              <tr>
+                <td colSpan={5} style={{ textAlign: "center", padding: "18px 0" }}>Nenhum registro</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* Controles de Paginação */}
+      {/* Paginação */}
       <div className="pagination">
         <span>Página {currentPage} de {totalPages}</span>
-        <button 
-          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Anterior
-        </button>
-        <button 
-          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
-        >
-          Próxima
-        </button>
+        <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>Anterior</button>
+        <button onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>Próxima</button>
       </div>
+
+      {/* MODAL ADD */}
+      {showAddModal && (
+        <div className="modal-overlay">
+          <div className="modal-container" role="dialog" aria-modal="true">
+            <div className="modal-header">Adicionar Novo Livro</div>
+            <div className="modal-body">
+              <div className="modal-field">
+                <label>CDD / CDU</label>
+                <input 
+                  value={newBook.cdd} 
+                  onChange={(e) => setNewBook(prev => ({ ...prev, cdd: e.target.value }))} 
+                  placeholder="Digite CDD/CDU"
+                />
+              </div>
+              <div className="modal-field">
+                <label>Título</label>
+                <input 
+                  value={newBook.titulo} 
+                  onChange={(e) => setNewBook(prev => ({ ...prev, titulo: e.target.value }))} 
+                  placeholder="Digite o título"
+                />
+              </div>
+              <div className="modal-field">
+                <label>Autor</label>
+                <input 
+                  value={newBook.autor} 
+                  onChange={(e) => setNewBook(prev => ({ ...prev, autor: e.target.value }))} 
+                  placeholder="Digite o autor"
+                />
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button className="cancel-btn" onClick={handleAddCancel}>Cancelar</button>
+              <button className="confirm-btn" onClick={handleAddConfirm}>Confirmar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL DELETE */}
+      {showDeleteModal && (
+        <div className="modal-overlay">
+          <div className="modal-container" role="dialog" aria-modal="true">
+            <div className="modal-header">Confirmar exclusão</div>
+            <div className="modal-body">
+              <p>Tem certeza que deseja deletar {selectedRows.length} registro(s)?</p>
+            </div>
+            <div className="modal-actions">
+              <button className="cancel-btn" onClick={handleDeleteCancel}>Cancelar</button>
+              <button className="confirm-btn delete-confirm-btn" onClick={handleDeleteConfirm}>Confirmar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
