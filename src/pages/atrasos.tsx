@@ -1,9 +1,10 @@
 import "../styles/global.css";
+import PaymentTablePage from "../components/TablePage/PaymentTablePage";
 
-export default function Atrasos() {
+export default function Emprestimos() {
   return (
-    <div className="delays-page" style={{ padding: "10px", backgroundColor: "lightblue", marginTop: "50px" }}>
-      <h1>🚀 Testando Atrasos</h1>
+    <div className="archive-page">
+      <PaymentTablePage />
     </div>
   );
 }
