@@ -23,3 +23,16 @@ export async function HasEnvBypass(): Promise<boolean> {
   console.log("VITE_BYPASS_AUTH raw value:", raw);
   return raw === "true";
 }
+
+export const logout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("userRole");
+};
+
+export const getToken = (): string | null => {
+  return localStorage.getItem("token");
+};
+
+export const getUserRole = (): string | null => {
+  return localStorage.getItem("userRole");
+};

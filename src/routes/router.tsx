@@ -15,8 +15,15 @@ function ProtectedLayout() {
       const envBypass = await HasEnvBypass();
 
       if (envBypass) {
-        console.log("⚙️ EnvBypass active — skipping backend route check.");
+        console.log("EnvBypass active — skipping backend route check.");
         setIsAuthorized(true);
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.log("No token - redirecting to login");
+        navigate("/login", { replace: true });
         return;
       }
 
@@ -25,6 +32,7 @@ function ProtectedLayout() {
       setIsAuthorized(allowed);
 
       if (!allowed) {
+        console.log("Access denied - redirecting to login");
         navigate("/login", { replace: true });
       }
     };
@@ -32,8 +40,19 @@ function ProtectedLayout() {
     checkAccess();
   }, [navigate]);
 
+  if (isAuthorized === null) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh'
+      }}>
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
-  if (isAuthorized === null) return <div>Loading...</div>;
   if (!isAuthorized) return null;
 
   return (

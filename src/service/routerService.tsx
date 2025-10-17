@@ -1,36 +1,29 @@
-const API_URL = "http://localhost:8080/api/router";
+import { getToken, HasEnvBypass } from './authService';
+import { testAPI } from './apiService';
 
-export async function canAccessRoute(path: string): Promise<boolean> {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) return false;
+export const canAccessRoute = async (path: string): Promise<boolean> => {
+  const envBypass = await HasEnvBypass();
+  if (envBypass) {
+    console.log("Bypass active - granting access to:", path);
+    return true;
+  }
 
-    const res = await fetch(`${API_URL}/can-access?path=${path}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!res.ok) return false;
-    const data = await res.json();
-    return data.allowed;
-  } catch (err) {
-    console.error("Error checking route access", err);
+  const token = getToken();
+  if (!token) {
+    console.log("No token found - redirecting to login");
     return false;
   }
-}
 
-export async function fetchAllowedRoutes(): Promise<string[]> {
   try {
-    const token = localStorage.getItem("token");
-    if (!token) return [];
-
-    const res = await fetch(`${API_URL}/allowed`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!res.ok) return [];
-    return await res.json();
-  } catch (err) {
-    console.error("Error fetching allowed routes", err);
-    return [];
+    if (path === '/atrasos' || path === '/relatorios' || path === '/configuracao') {
+      await testAPI.getAdminContent();
+    } else {
+      await testAPI.getUserContent();
+    }
+    console.log("Backend access verified for:", path);
+    return true;
+  } catch (error) {
+    console.log("Backend access denied for:", path, error);
+    return false;
   }
-}
+};
