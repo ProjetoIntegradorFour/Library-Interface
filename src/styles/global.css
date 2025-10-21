@@ -88,7 +88,7 @@
 
 /* Aparência do cabeçalho da tabela (tinta azulada) */
 .dashboard-right .custom-table th {
-  background-color: #97a6bb; /* tom próximo ao mock */
+  background-color: #8BC34A; /* tom próximo ao mock */
   color: #fff;
   padding: 10px 14px;
   font-weight: 700;
@@ -101,7 +101,7 @@
 
 /* Destaque visual de linhas parecidas com o mock */
 .dashboard-right .custom-table tr:nth-child(even) {
-  background-color: #e9eef4;
+  background-color: #F1F8E9;
 }
 
 /* Coluna esquerda (Id) mais forte, igual ao design */
@@ -113,7 +113,7 @@
 /* Override do margin-top excessivo vindo do componente */
 .dashboard-right .line-chart-wrapper {
   margin-top: 10px;              /* dá um espaçamento controlado */
-  background-color: #9AA6BF;
+  background-color: #C5E1A5;
   border-radius: 12px;
   padding: 20px;
   display: flex;

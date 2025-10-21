@@ -38,7 +38,7 @@ const LineChartLoans: React.FC<LineChartLoansProps> = ({ data }) => {
       {
         label: 'Quantia por mês',
         data: data.map(d => d.amount),
-        borderColor: 'rgba(75,192,192,1)',
+        borderColor: '#689F38',
         backgroundColor: 'rgba(75,192,192,0.2)',
         tension: 0.4, // suaviza a linha
         fill: true,

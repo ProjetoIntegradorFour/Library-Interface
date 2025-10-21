@@ -17,7 +17,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #7CDEFF;
+  background-color: #BA68C8;
+  border: #9C27B0 2px solid;
   border-radius: 6px;
   padding: 12px;
   margin: 6px 0;
@@ -30,12 +31,12 @@
 }
 
 .menu-item:hover {
-  background-color: #5eb8f0;
+  background-color: #AB47BC;
 }
 
 .menu-item.active {
-  background-color: #499CD8;
-  border: #1B77BA solid 2px;
+  background-color: #9C27B0;
+  border: #9C27B0 solid 2px;
 }
 
 .icon {
@@ -55,19 +56,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #7CDEFF;
+  background-color: #BA68C8;
+  border: #9C27B0 2px solid;
   border-radius: 6px;
   padding: 10px;
   transition: background-color 0.3s ease;
 }
 
 .mini-item:hover {
-  background-color: #5eb8f0;
+  background-color: #AB47BC;
 }
 
 .mini-item.active {
-  background-color: #499CD8;
-  border: #1B77BA solid 2px;
+  background-color: #9C27B0;
+  border: #9C27B0 solid 2px;
 }
 
 .mini-icon {

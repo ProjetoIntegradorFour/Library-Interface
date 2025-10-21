@@ -14,7 +14,8 @@
   display: flex;
   width: 24rem;  
   height: 10rem; 
-  background-color: #9AA6BF;
+  background-color: #ffffff;
+  border: #9C27B0 3px solid;
   border-radius: 0.5rem; 
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   overflow: hidden;
@@ -39,5 +40,5 @@
   padding: 1rem; 
   flex-direction: column;
   justify-content: space-between;
-  color: #ffffff; 
+  color: black; 
 }
