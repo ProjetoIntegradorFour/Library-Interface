@@ -23,6 +23,15 @@ export const logout = () => {
 export const getToken = (): string | null => localStorage.getItem("token");
 export const getUserRole = (): string | null => localStorage.getItem("userRole");
 
-export const isAuthenticated = (): boolean => !!getToken();
+export const isAuthenticated = (): boolean => {
+  const token = getToken();
+  const hasToken = !!token;
+  console.log("Auth check - Token exists:", hasToken);
+  return hasToken;
+};
 
-export const HasEnvBypass = (): boolean => import.meta.env.VITE_BYPASS_AUTH === "true";
+export const HasEnvBypass = (): boolean => {
+  const bypass = import.meta.env.VITE_BYPASS_AUTH === "true";
+  console.log("Env bypass:", bypass);
+  return bypass;
+};

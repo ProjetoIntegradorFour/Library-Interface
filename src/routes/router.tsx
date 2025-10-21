@@ -1,7 +1,13 @@
-import { createBrowserRouter } from "react-router-dom";
+// src/routes/router.tsx
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { Dashboard, Login, Acervo, Emprestimos, Atrasos, Relatorios, Perfil, Configuracao } from "../pages";
 import ProtectedRoute from "../components/protectedRoute";
 import ProtectedLayout from "./ProtectedLayout";
+
+// Layout wrapper component
+const LayoutWrapper = ({ children }: { children: React.ReactNode }) => (
+  <ProtectedLayout>{children}</ProtectedLayout>
+);
 
 export const router = createBrowserRouter([
   {
@@ -12,9 +18,9 @@ export const router = createBrowserRouter([
     path: "/",
     element: (
       <ProtectedRoute>
-        <ProtectedLayout>
+        <LayoutWrapper>
           <Dashboard />
-        </ProtectedLayout>
+        </LayoutWrapper>
       </ProtectedRoute>
     )
   },
@@ -22,9 +28,9 @@ export const router = createBrowserRouter([
     path: "/acervo",
     element: (
       <ProtectedRoute>
-        <ProtectedLayout>
+        <LayoutWrapper>
           <Acervo />
-        </ProtectedLayout>
+        </LayoutWrapper>
       </ProtectedRoute>
     )
   },
@@ -32,9 +38,9 @@ export const router = createBrowserRouter([
     path: "/emprestimos",
     element: (
       <ProtectedRoute>
-        <ProtectedLayout>
+        <LayoutWrapper>
           <Emprestimos />
-        </ProtectedLayout>
+        </LayoutWrapper>
       </ProtectedRoute>
     )
   },
@@ -42,9 +48,9 @@ export const router = createBrowserRouter([
     path: "/atrasos",
     element: (
       <ProtectedRoute>
-        <ProtectedLayout>
+        <LayoutWrapper>
           <Atrasos />
-        </ProtectedLayout>
+        </LayoutWrapper>
       </ProtectedRoute>
     )
   },
@@ -52,9 +58,9 @@ export const router = createBrowserRouter([
     path: "/relatorios",
     element: (
       <ProtectedRoute>
-        <ProtectedLayout>
+        <LayoutWrapper>
           <Relatorios />
-        </ProtectedLayout>
+        </LayoutWrapper>
       </ProtectedRoute>
     )
   },
@@ -62,9 +68,9 @@ export const router = createBrowserRouter([
     path: "/perfil",
     element: (
       <ProtectedRoute>
-        <ProtectedLayout>
+        <LayoutWrapper>
           <Perfil />
-        </ProtectedLayout>
+        </LayoutWrapper>
       </ProtectedRoute>
     )
   },
@@ -72,10 +78,14 @@ export const router = createBrowserRouter([
     path: "/configuracao",
     element: (
       <ProtectedRoute>
-        <ProtectedLayout>
+        <LayoutWrapper>
           <Configuracao />
-        </ProtectedLayout>
+        </LayoutWrapper>
       </ProtectedRoute>
     )
+  },
+  {
+    path: "*",
+    element: <Navigate to="/" replace />
   }
 ]);
