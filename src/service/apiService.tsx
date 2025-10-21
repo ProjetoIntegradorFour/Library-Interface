@@ -1,51 +1,40 @@
-import { getToken } from './authService';
+import { getToken, logout } from './authService';
 
 const API_BASE_URL = "http://localhost:8080/api";
 
-// Generic API call with auth header
-const apiCall = async (endpoint: string, options: RequestInit = {}) => {
-  const token = getToken();
-  
-  const config: RequestInit = {
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` }),
-      ...options.headers,
-    },
-    ...options,
-  };
+class ApiService {
+    private async request(endpoint: string, options: RequestInit = {}) {
+        const token = getToken();
+        const config: RequestInit = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` }),
+                ...options.headers,
+            },
+            ...options,
+        };
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-  
-  if (response.status === 401 || response.status === 403) {
-    // Token expired or insufficient permissions
-    localStorage.removeItem("token");
-    localStorage.removeItem("userRole");
-    window.location.href = "/login";
-    throw new Error("Authentication required");
-  }
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => null);
-    throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
-  }
+        // Auto-handle auth errors
+        if (response.status === 401 || response.status === 403) {
+            logout();
+            window.location.href = "/login";
+            throw new Error("Authentication required");
+        }
 
-  return response.json();
-};
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-// Test endpoints
-export const testAPI = {
-  getPublicContent: () => apiCall('/test/all'),
-  getUserContent: () => apiCall('/test/user'),
-  getAdminContent: () => apiCall('/test/admin'),
-};
+        return response.json();
+    }
 
-// Application endpoints
-export const appAPI = {
-  getDashboard: () => apiCall('/dashboard'),
-  getAcervo: () => apiCall('/acervo'),
-  getEmprestimos: () => apiCall('/emprestimos'),
-  getAtrasos: () => apiCall('/atrasos'),
-  getRelatorios: () => apiCall('/relatorios'),
-};
+    get(endpoint: string) { return this.request(endpoint); }
+    post(endpoint: string, data: any) { return this.request(endpoint, { method: 'POST', body: JSON.stringify(data) }); }
+    put(endpoint: string, data: any) { return this.request(endpoint, { method: 'PUT', body: JSON.stringify(data) }); }
+    delete(endpoint: string) { return this.request(endpoint, { method: 'DELETE' }); }
+}
+
+export const apiService = new ApiService();
