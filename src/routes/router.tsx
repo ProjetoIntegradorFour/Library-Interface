@@ -1,58 +1,91 @@
-import { createBrowserRouter, Outlet, useNavigate } from "react-router-dom";
+// src/routes/router.tsx
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { Dashboard, Login, Acervo, Emprestimos, Atrasos, Relatorios, Perfil, Configuracao } from "../pages";
-import { useEffect, useState } from "react";
-import { HasEnvBypass } from "../service/auth/authService";
-import Header from "../components/Header/Header";
-import Sidebar from "../components/Sidebar/Sidebar";
+import ProtectedRoute from "../components/protectedRoute";
+import ProtectedLayout from "./ProtectedLayout";
 
-function ProtectedLayout() {
-  const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const authStatus = await HasEnvBypass();
-      setIsAuthenticated(authStatus);
-
-      if (!authStatus) {
-        navigate("/login", { replace: true });
-      }
-    };
-
-    checkAuth();
-  }, [navigate]);
-
-  if (isAuthenticated === null) return <div>Loading...</div>;
-  if (!isAuthenticated) return null;
-
-  return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
-      <Sidebar />
-      <div style={{ flex: 1 }}>
-        <Header />
-        <div style={{ marginTop: "60px", padding: "1rem" }}>
-          <Outlet />
-        </div>
-      </div>
-    </div>
-  );
-}
+// Layout wrapper component
+const LayoutWrapper = ({ children }: { children: React.ReactNode }) => (
+  <ProtectedLayout>{children}</ProtectedLayout>
+);
 
 export const router = createBrowserRouter([
   {
     path: "/login",
-    element: <Login />,
+    element: <Login />
   },
   {
-    element: <ProtectedLayout />,
-    children: [
-      { path: "/", element: <Dashboard /> },
-      { path: "/acervo", element: <Acervo /> },
-      { path: "/emprestimos", element: <Emprestimos /> },
-      { path: "/atrasos", element: <Atrasos /> },
-      { path: "/relatorios", element: <Relatorios /> },
-      { path: "/perfil", element: <Perfil /> },
-      { path: "/configuracao", element: <Configuracao /> },
-    ],
+    path: "/",
+    element: (
+      <ProtectedRoute>
+        <LayoutWrapper>
+          <Dashboard />
+        </LayoutWrapper>
+      </ProtectedRoute>
+    )
   },
+  {
+    path: "/acervo",
+    element: (
+      <ProtectedRoute>
+        <LayoutWrapper>
+          <Acervo />
+        </LayoutWrapper>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/emprestimos",
+    element: (
+      <ProtectedRoute>
+        <LayoutWrapper>
+          <Emprestimos />
+        </LayoutWrapper>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/atrasos",
+    element: (
+      <ProtectedRoute>
+        <LayoutWrapper>
+          <Atrasos />
+        </LayoutWrapper>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/relatorios",
+    element: (
+      <ProtectedRoute>
+        <LayoutWrapper>
+          <Relatorios />
+        </LayoutWrapper>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/perfil",
+    element: (
+      <ProtectedRoute>
+        <LayoutWrapper>
+          <Perfil />
+        </LayoutWrapper>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/configuracao",
+    element: (
+      <ProtectedRoute>
+        <LayoutWrapper>
+          <Configuracao />
+        </LayoutWrapper>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "*",
+    element: <Navigate to="/" replace />
+  }
 ]);
