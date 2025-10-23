@@ -1,5 +1,5 @@
 import "../styles/global.css";
-import TablePage from "../components/TablePage/TablePage";
+import TablePage from "../components/TablePage";
 
 export default function Acervo() {
   return (

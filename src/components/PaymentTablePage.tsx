@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import plusIcon from "../../assets/img/plus.png";
-import trashIcon from "../../assets/img/trash.png";
-import editIcon from "../../assets/img/edit.png";
+import plusIcon from "../assets/img/plus.png";
+import trashIcon from "../assets/img/trash.png";
+import editIcon from "../assets/img/edit.png";
 
-interface Emprestimo {
+interface Atraso {
   id: number;
   aluno: string;
   livro: string;
-  status: string;
+  multa: string;
   data: string;
 }
 
@@ -16,38 +16,38 @@ interface FilterState {
   id: string;
   aluno: string;
   livro: string;
-  status: string;
+  multa: string;
   data: string;
 }
 
-const EmprestimosPage: React.FC = () => {
-  const [emprestimos, setEmprestimos] = useState<Emprestimo[]>([]);
-  const [filteredEmprestimos, setFilteredEmprestimos] = useState<Emprestimo[]>([]);
+const AtrasosPage: React.FC = () => {
+  const [atrasos, setAtrasos] = useState<Atraso[]>([]);
+  const [filteredAtrasos, setFilteredAtrasos] = useState<Atraso[]>([]);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [filters, setFilters] = useState<FilterState>({ 
     id: "", 
     aluno: "", 
     livro: "", 
-    status: "", 
+    multa: "", 
     data: "" 
   });
 
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
-  const [newEmprestimo, setNewEmprestimo] = useState<Omit<Emprestimo, "id">>({ 
+  const [newAtraso, setNewAtraso] = useState<Omit<Atraso, "id">>({ 
     aluno: "", 
     livro: "", 
-    status: "", 
+    multa: "", 
     data: "" 
   });
 
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editValues, setEditValues] = useState<Omit<Emprestimo, "id">>({ 
+  const [editValues, setEditValues] = useState<Omit<Atraso, "id">>({ 
     aluno: "", 
     livro: "", 
-    status: "", 
+    multa: "", 
     data: "" 
   });
 
@@ -59,27 +59,29 @@ const EmprestimosPage: React.FC = () => {
 
   // load localStorage
   useEffect(() => {
-    const stored = localStorage.getItem("emprestimos");
+    const stored = localStorage.getItem("atrasos");
     if (stored) {
-      const parsed: Emprestimo[] = JSON.parse(stored);
-      setEmprestimos(parsed);
-      setFilteredEmprestimos(parsed);
+      const parsed: Atraso[] = JSON.parse(stored);
+      setAtrasos(parsed);
+      setFilteredAtrasos(parsed);
     } else {
       // Dados de exemplo para demonstração
-      const exemploEmprestimos: Emprestimo[] = [
-        { id: 1, aluno: "João Silva", livro: "Dom Casmurro", status: "Ativo", data: "2024-01-15" },
-        { id: 2, aluno: "Maria Santos", livro: "O Cortiço", status: "Devolvido", data: "2024-01-10" },
-        { id: 3, aluno: "Pedro Oliveira", livro: "Memórias Póstumas", status: "Atrasado", data: "2024-01-05" },
+      const exemploAtrasos: Atraso[] = [
+        { id: 1, aluno: "João Silva", livro: "Dom Casmurro", multa: "R$ 5,00", data: "2024-01-15" },
+        { id: 2, aluno: "Maria Santos", livro: "O Cortiço", multa: "R$ 10,00", data: "2024-01-10" },
+        { id: 3, aluno: "Pedro Oliveira", livro: "Memórias Póstumas", multa: "R$ 15,50", data: "2024-01-05" },
+        { id: 4, aluno: "Ana Costa", livro: "Iracema", multa: "R$ 7,00", data: "2024-01-20" },
+        { id: 5, aluno: "Carlos Lima", livro: "O Guarani", multa: "R$ 12,00", data: "2024-01-18" },
       ];
-      setEmprestimos(exemploEmprestimos);
-      setFilteredEmprestimos(exemploEmprestimos);
+      setAtrasos(exemploAtrasos);
+      setFilteredAtrasos(exemploAtrasos);
     }
   }, []);
 
   // persist
   useEffect(() => {
-    localStorage.setItem("emprestimos", JSON.stringify(emprestimos));
-  }, [emprestimos]);
+    localStorage.setItem("atrasos", JSON.stringify(atrasos));
+  }, [atrasos]);
 
   // fechar filtro clicando fora
   useEffect(() => {
@@ -94,22 +96,22 @@ const EmprestimosPage: React.FC = () => {
 
   // aplicar filtros
   useEffect(() => {
-    let result = emprestimos.slice();
-    if (filters.id) result = result.filter(e => e.id.toString().includes(filters.id));
-    if (filters.aluno) result = result.filter(e => e.aluno.toLowerCase().includes(filters.aluno.toLowerCase()));
-    if (filters.livro) result = result.filter(e => e.livro.toLowerCase().includes(filters.livro.toLowerCase()));
-    if (filters.status) result = result.filter(e => e.status.toLowerCase().includes(filters.status.toLowerCase()));
-    if (filters.data) result = result.filter(e => e.data.includes(filters.data));
+    let result = atrasos.slice();
+    if (filters.id) result = result.filter(a => a.id.toString().includes(filters.id));
+    if (filters.aluno) result = result.filter(a => a.aluno.toLowerCase().includes(filters.aluno.toLowerCase()));
+    if (filters.livro) result = result.filter(a => a.livro.toLowerCase().includes(filters.livro.toLowerCase()));
+    if (filters.multa) result = result.filter(a => a.multa.toLowerCase().includes(filters.multa.toLowerCase()));
+    if (filters.data) result = result.filter(a => a.data.includes(filters.data));
     
-    setFilteredEmprestimos(result);
+    setFilteredAtrasos(result);
     setCurrentPage(1);
-  }, [emprestimos, filters]);
+  }, [atrasos, filters]);
 
   // paginação
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  const currentRows = filteredEmprestimos.slice(indexOfFirstRow, indexOfLastRow);
-  const totalPages = Math.max(1, Math.ceil(filteredEmprestimos.length / rowsPerPage));
+  const currentRows = filteredAtrasos.slice(indexOfFirstRow, indexOfLastRow);
+  const totalPages = Math.max(1, Math.ceil(filteredAtrasos.length / rowsPerPage));
 
   // seleção
   const handleRowSelect = (id: number) => {
@@ -123,31 +125,31 @@ const EmprestimosPage: React.FC = () => {
 
   // adicionar (abre modal)
   const handleAddOpen = () => {
-    setNewEmprestimo({ aluno: "", livro: "", status: "", data: "" });
+    setNewAtraso({ aluno: "", livro: "", multa: "", data: "" });
     setShowAddModal(true);
   };
 
   const handleAddConfirm = () => {
-    if (!newEmprestimo.aluno.trim() || !newEmprestimo.livro.trim() || !newEmprestimo.status.trim() || !newEmprestimo.data.trim()) {
-      alert("Preencha todos os campos: Aluno, Livro, Status e Data.");
+    if (!newAtraso.aluno.trim() || !newAtraso.livro.trim() || !newAtraso.multa.trim() || !newAtraso.data.trim()) {
+      alert("Preencha todos os campos: Aluno, Livro, Multa e Data.");
       return;
     }
-    const newId = emprestimos.length > 0 ? Math.max(...emprestimos.map(e => e.id)) + 1 : 1;
-    const entry: Emprestimo = { 
+    const newId = atrasos.length > 0 ? Math.max(...atrasos.map(a => a.id)) + 1 : 1;
+    const entry: Atraso = { 
       id: newId, 
-      aluno: newEmprestimo.aluno.trim(), 
-      livro: newEmprestimo.livro.trim(), 
-      status: newEmprestimo.status.trim(), 
-      data: newEmprestimo.data.trim() 
+      aluno: newAtraso.aluno.trim(), 
+      livro: newAtraso.livro.trim(), 
+      multa: newAtraso.multa.trim(), 
+      data: newAtraso.data.trim() 
     };
-    const updated = [...emprestimos, entry];
-    setEmprestimos(updated);
+    const updated = [...atrasos, entry];
+    setAtrasos(updated);
     setShowAddModal(false);
   };
 
   const handleAddCancel = () => {
     setShowAddModal(false);
-    setNewEmprestimo({ aluno: "", livro: "", status: "", data: "" });
+    setNewAtraso({ aluno: "", livro: "", multa: "", data: "" });
   };
 
   // deletar (abre modal)
@@ -160,8 +162,8 @@ const EmprestimosPage: React.FC = () => {
   };
 
   const handleDeleteConfirm = () => {
-    const updated = emprestimos.filter(e => !selectedRows.includes(e.id));
-    setEmprestimos(updated);
+    const updated = atrasos.filter(a => !selectedRows.includes(a.id));
+    setAtrasos(updated);
     setSelectedRows([]);
     setShowDeleteModal(false);
   };
@@ -179,48 +181,48 @@ const EmprestimosPage: React.FC = () => {
         return;
       }
       const id = selectedRows[0];
-      const emprestimo = emprestimos.find(e => e.id === id)!;
+      const atraso = atrasos.find(a => a.id === id)!;
       setEditingId(id);
       setEditValues({ 
-        aluno: emprestimo.aluno, 
-        livro: emprestimo.livro, 
-        status: emprestimo.status, 
-        data: emprestimo.data 
+        aluno: atraso.aluno, 
+        livro: atraso.livro, 
+        multa: atraso.multa, 
+        data: atraso.data 
       });
     } else {
       // salvar edição
-      if (!editValues.aluno.trim() || !editValues.livro.trim() || !editValues.status.trim() || !editValues.data.trim()) {
-        alert("Preencha todos os campos: Aluno, Livro, Status e Data.");
+      if (!editValues.aluno.trim() || !editValues.livro.trim() || !editValues.multa.trim() || !editValues.data.trim()) {
+        alert("Preencha todos os campos: Aluno, Livro, Multa e Data.");
         return;
       }
-      const updated = emprestimos.map(e => 
-        e.id === editingId ? { 
-          id: e.id, 
+      const updated = atrasos.map(a => 
+        a.id === editingId ? { 
+          id: a.id, 
           aluno: editValues.aluno.trim(), 
           livro: editValues.livro.trim(), 
-          status: editValues.status.trim(), 
+          multa: editValues.multa.trim(), 
           data: editValues.data.trim() 
-        } : e
+        } : a
       );
-      setEmprestimos(updated);
+      setAtrasos(updated);
       setEditingId(null);
-      setEditValues({ aluno: "", livro: "", status: "", data: "" });
+      setEditValues({ aluno: "", livro: "", multa: "", data: "" });
       setSelectedRows([]);
     }
   };
 
   const handleEditCancel = () => {
     setEditingId(null);
-    setEditValues({ aluno: "", livro: "", status: "", data: "" });
+    setEditValues({ aluno: "", livro: "", multa: "", data: "" });
     setSelectedRows([]);
   };
 
   const clearFilters = () => {
-    setFilters({ id: "", aluno: "", livro: "", status: "", data: "" });
+    setFilters({ id: "", aluno: "", livro: "", multa: "", data: "" });
   };
 
   const hasActiveFilters = () => {
-    return filters.id !== "" || filters.aluno !== "" || filters.livro !== "" || filters.status !== "" || filters.data !== "";
+    return filters.id !== "" || filters.aluno !== "" || filters.livro !== "" || filters.multa !== "" || filters.data !== "";
   };
 
   return (
@@ -271,12 +273,12 @@ const EmprestimosPage: React.FC = () => {
                       />
                     </div>
                     <div className="filter-field">
-                      <label>Status</label>
+                      <label>Multa</label>
                       <input 
                         type="text" 
-                        value={filters.status} 
-                        onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                        placeholder="Filtrar por status"
+                        value={filters.multa} 
+                        onChange={(e) => setFilters(prev => ({ ...prev, multa: e.target.value }))}
+                        placeholder="Filtrar por multa"
                       />
                     </div>
                     <div className="filter-field">
@@ -333,69 +335,69 @@ const EmprestimosPage: React.FC = () => {
               <th>ID</th>
               <th>NOME DO ALUNO</th>
               <th>LIVRO</th>
-              <th>STATUS</th>
+              <th>MULTA</th>
               <th>DATA</th>
             </tr>
           </thead>
           <tbody>
-            {currentRows.map((emprestimo) => (
-              <tr key={emprestimo.id} className={selectedRows.includes(emprestimo.id) ? "selected" : ""}>
+            {currentRows.map((atraso) => (
+              <tr key={atraso.id} className={selectedRows.includes(atraso.id) ? "selected" : ""}>
                 <td>
                   <input
                     type="checkbox"
-                    checked={selectedRows.includes(emprestimo.id)}
-                    onChange={() => handleRowSelect(emprestimo.id)}
+                    checked={selectedRows.includes(atraso.id)}
+                    onChange={() => handleRowSelect(atraso.id)}
                   />
                 </td>
-                <td>{emprestimo.id}</td>
+                <td>{atraso.id}</td>
 
                 <td>
-                  {editingId === emprestimo.id ? (
+                  {editingId === atraso.id ? (
                     <input 
                       className="inline-edit" 
                       value={editValues.aluno} 
                       onChange={(e) => setEditValues(prev => ({ ...prev, aluno: e.target.value }))} 
                     />
                   ) : (
-                    emprestimo.aluno
+                    atraso.aluno
                   )}
                 </td>
 
                 <td>
-                  {editingId === emprestimo.id ? (
+                  {editingId === atraso.id ? (
                     <input 
                       className="inline-edit" 
                       value={editValues.livro} 
                       onChange={(e) => setEditValues(prev => ({ ...prev, livro: e.target.value }))} 
                     />
                   ) : (
-                    emprestimo.livro
+                    atraso.livro
                   )}
                 </td>
 
                 <td>
-                  {editingId === emprestimo.id ? (
+                  {editingId === atraso.id ? (
                     <input 
                       className="inline-edit" 
-                      value={editValues.status} 
-                      onChange={(e) => setEditValues(prev => ({ ...prev, status: e.target.value }))} 
+                      value={editValues.multa} 
+                      onChange={(e) => setEditValues(prev => ({ ...prev, multa: e.target.value }))} 
                     />
                   ) : (
-                    <span className={`status-badge status-${emprestimo.status.toLowerCase()}`}>
-                      {emprestimo.status}
+                    <span className="multa-value">
+                      {atraso.multa}
                     </span>
                   )}
                 </td>
 
                 <td>
-                  {editingId === emprestimo.id ? (
+                  {editingId === atraso.id ? (
                     <input 
                       className="inline-edit" 
                       value={editValues.data} 
                       onChange={(e) => setEditValues(prev => ({ ...prev, data: e.target.value }))} 
                     />
                   ) : (
-                    emprestimo.data
+                    atraso.data
                   )}
                 </td>
               </tr>
@@ -421,43 +423,38 @@ const EmprestimosPage: React.FC = () => {
       {showAddModal && (
         <div className="modal-overlay">
           <div className="modal-container" role="dialog" aria-modal="true">
-            <div className="modal-header">Adicionar Novo Empréstimo</div>
+            <div className="modal-header">Adicionar Novo Atraso/Pagamento</div>
             <div className="modal-body">
               <div className="modal-field">
                 <label>Nome do Aluno</label>
                 <input 
-                  value={newEmprestimo.aluno} 
-                  onChange={(e) => setNewEmprestimo(prev => ({ ...prev, aluno: e.target.value }))} 
+                  value={newAtraso.aluno} 
+                  onChange={(e) => setNewAtraso(prev => ({ ...prev, aluno: e.target.value }))} 
                   placeholder="Digite o nome do aluno"
                 />
               </div>
               <div className="modal-field">
                 <label>Livro</label>
                 <input 
-                  value={newEmprestimo.livro} 
-                  onChange={(e) => setNewEmprestimo(prev => ({ ...prev, livro: e.target.value }))} 
+                  value={newAtraso.livro} 
+                  onChange={(e) => setNewAtraso(prev => ({ ...prev, livro: e.target.value }))} 
                   placeholder="Digite o nome do livro"
                 />
               </div>
               <div className="modal-field">
-                <label>Status</label>
-                <select 
-                  value={newEmprestimo.status} 
-                  onChange={(e) => setNewEmprestimo(prev => ({ ...prev, status: e.target.value }))}
-                >
-                  <option value="">Selecione o status</option>
-                  <option value="Ativo">Ativo</option>
-                  <option value="Devolvido">Devolvido</option>
-                  <option value="Atrasado">Atrasado</option>
-                  <option value="Renovado">Renovado</option>
-                </select>
+                <label>Multa</label>
+                <input 
+                  value={newAtraso.multa} 
+                  onChange={(e) => setNewAtraso(prev => ({ ...prev, multa: e.target.value }))} 
+                  placeholder="Digite o valor da multa (ex: R$ 5,00)"
+                />
               </div>
               <div className="modal-field">
                 <label>Data</label>
                 <input 
                   type="date"
-                  value={newEmprestimo.data} 
-                  onChange={(e) => setNewEmprestimo(prev => ({ ...prev, data: e.target.value }))} 
+                  value={newAtraso.data} 
+                  onChange={(e) => setNewAtraso(prev => ({ ...prev, data: e.target.value }))} 
                 />
               </div>
             </div>
@@ -488,4 +485,4 @@ const EmprestimosPage: React.FC = () => {
   );
 };
 
-export default EmprestimosPage;
+export default AtrasosPage;
