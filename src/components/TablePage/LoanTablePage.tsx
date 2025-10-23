@@ -4,34 +4,52 @@ import plusIcon from "../../assets/img/plus.png";
 import trashIcon from "../../assets/img/trash.png";
 import editIcon from "../../assets/img/edit.png";
 
-interface Book {
+interface Emprestimo {
   id: number;
-  cdd: string;
-  titulo: string;
-  autor: string;
+  aluno: string;
+  livro: string;
+  status: string;
+  data: string;
 }
 
 interface FilterState {
   id: string;
-  cdd: string;
-  titulo: string;
-  autor: string;
+  aluno: string;
+  livro: string;
+  status: string;
+  data: string;
 }
 
-const TablePage: React.FC = () => {
-  const [books, setBooks] = useState<Book[]>([]);
-  const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
+const EmprestimosPage: React.FC = () => {
+  const [emprestimos, setEmprestimos] = useState<Emprestimo[]>([]);
+  const [filteredEmprestimos, setFilteredEmprestimos] = useState<Emprestimo[]>([]);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [showFilter, setShowFilter] = useState<boolean>(false);
-  const [filters, setFilters] = useState<FilterState>({ id: "", cdd: "", titulo: "", autor: "" });
+  const [filters, setFilters] = useState<FilterState>({ 
+    id: "", 
+    aluno: "", 
+    livro: "", 
+    status: "", 
+    data: "" 
+  });
 
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
-  const [newBook, setNewBook] = useState<Omit<Book, "id">>({ cdd: "", titulo: "", autor: "" });
+  const [newEmprestimo, setNewEmprestimo] = useState<Omit<Emprestimo, "id">>({ 
+    aluno: "", 
+    livro: "", 
+    status: "", 
+    data: "" 
+  });
 
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editValues, setEditValues] = useState<Omit<Book, "id">>({ cdd: "", titulo: "", autor: "" });
+  const [editValues, setEditValues] = useState<Omit<Emprestimo, "id">>({ 
+    aluno: "", 
+    livro: "", 
+    status: "", 
+    data: "" 
+  });
 
   // paginação
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -41,21 +59,27 @@ const TablePage: React.FC = () => {
 
   // load localStorage
   useEffect(() => {
-    const stored = localStorage.getItem("books");
+    const stored = localStorage.getItem("emprestimos");
     if (stored) {
-      const parsed: Book[] = JSON.parse(stored);
-      setBooks(parsed);
-      setFilteredBooks(parsed);
+      const parsed: Emprestimo[] = JSON.parse(stored);
+      setEmprestimos(parsed);
+      setFilteredEmprestimos(parsed);
     } else {
-      setBooks([]);
-      setFilteredBooks([]);
+      // Dados de exemplo para demonstração
+      const exemploEmprestimos: Emprestimo[] = [
+        { id: 1, aluno: "João Silva", livro: "Dom Casmurro", status: "Ativo", data: "2024-01-15" },
+        { id: 2, aluno: "Maria Santos", livro: "O Cortiço", status: "Devolvido", data: "2024-01-10" },
+        { id: 3, aluno: "Pedro Oliveira", livro: "Memórias Póstumas", status: "Atrasado", data: "2024-01-05" },
+      ];
+      setEmprestimos(exemploEmprestimos);
+      setFilteredEmprestimos(exemploEmprestimos);
     }
   }, []);
 
   // persist
   useEffect(() => {
-    localStorage.setItem("books", JSON.stringify(books));
-  }, [books]);
+    localStorage.setItem("emprestimos", JSON.stringify(emprestimos));
+  }, [emprestimos]);
 
   // fechar filtro clicando fora
   useEffect(() => {
@@ -70,21 +94,22 @@ const TablePage: React.FC = () => {
 
   // aplicar filtros
   useEffect(() => {
-    let result = books.slice();
-    if (filters.id) result = result.filter(b => b.id.toString().includes(filters.id));
-    if (filters.cdd) result = result.filter(b => b.cdd.toLowerCase().includes(filters.cdd.toLowerCase()));
-    if (filters.titulo) result = result.filter(b => b.titulo.toLowerCase().includes(filters.titulo.toLowerCase()));
-    if (filters.autor) result = result.filter(b => b.autor.toLowerCase().includes(filters.autor.toLowerCase()));
+    let result = emprestimos.slice();
+    if (filters.id) result = result.filter(e => e.id.toString().includes(filters.id));
+    if (filters.aluno) result = result.filter(e => e.aluno.toLowerCase().includes(filters.aluno.toLowerCase()));
+    if (filters.livro) result = result.filter(e => e.livro.toLowerCase().includes(filters.livro.toLowerCase()));
+    if (filters.status) result = result.filter(e => e.status.toLowerCase().includes(filters.status.toLowerCase()));
+    if (filters.data) result = result.filter(e => e.data.includes(filters.data));
     
-    setFilteredBooks(result);
+    setFilteredEmprestimos(result);
     setCurrentPage(1);
-  }, [books, filters]);
+  }, [emprestimos, filters]);
 
   // paginação
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  const currentRows = filteredBooks.slice(indexOfFirstRow, indexOfLastRow);
-  const totalPages = Math.max(1, Math.ceil(filteredBooks.length / rowsPerPage));
+  const currentRows = filteredEmprestimos.slice(indexOfFirstRow, indexOfLastRow);
+  const totalPages = Math.max(1, Math.ceil(filteredEmprestimos.length / rowsPerPage));
 
   // seleção
   const handleRowSelect = (id: number) => {
@@ -98,25 +123,31 @@ const TablePage: React.FC = () => {
 
   // adicionar (abre modal)
   const handleAddOpen = () => {
-    setNewBook({ cdd: "", titulo: "", autor: "" });
+    setNewEmprestimo({ aluno: "", livro: "", status: "", data: "" });
     setShowAddModal(true);
   };
 
   const handleAddConfirm = () => {
-    if (!newBook.cdd.trim() || !newBook.titulo.trim() || !newBook.autor.trim()) {
-      alert("Preencha CDD, Título e Autor.");
+    if (!newEmprestimo.aluno.trim() || !newEmprestimo.livro.trim() || !newEmprestimo.status.trim() || !newEmprestimo.data.trim()) {
+      alert("Preencha todos os campos: Aluno, Livro, Status e Data.");
       return;
     }
-    const newId = books.length > 0 ? Math.max(...books.map(b => b.id)) + 1 : 1;
-    const entry: Book = { id: newId, cdd: newBook.cdd.trim(), titulo: newBook.titulo.trim(), autor: newBook.autor.trim() };
-    const updated = [...books, entry];
-    setBooks(updated);
+    const newId = emprestimos.length > 0 ? Math.max(...emprestimos.map(e => e.id)) + 1 : 1;
+    const entry: Emprestimo = { 
+      id: newId, 
+      aluno: newEmprestimo.aluno.trim(), 
+      livro: newEmprestimo.livro.trim(), 
+      status: newEmprestimo.status.trim(), 
+      data: newEmprestimo.data.trim() 
+    };
+    const updated = [...emprestimos, entry];
+    setEmprestimos(updated);
     setShowAddModal(false);
   };
 
   const handleAddCancel = () => {
     setShowAddModal(false);
-    setNewBook({ cdd: "", titulo: "", autor: "" });
+    setNewEmprestimo({ aluno: "", livro: "", status: "", data: "" });
   };
 
   // deletar (abre modal)
@@ -129,8 +160,8 @@ const TablePage: React.FC = () => {
   };
 
   const handleDeleteConfirm = () => {
-    const updated = books.filter(b => !selectedRows.includes(b.id));
-    setBooks(updated);
+    const updated = emprestimos.filter(e => !selectedRows.includes(e.id));
+    setEmprestimos(updated);
     setSelectedRows([]);
     setShowDeleteModal(false);
   };
@@ -148,35 +179,48 @@ const TablePage: React.FC = () => {
         return;
       }
       const id = selectedRows[0];
-      const book = books.find(b => b.id === id)!;
+      const emprestimo = emprestimos.find(e => e.id === id)!;
       setEditingId(id);
-      setEditValues({ cdd: book.cdd, titulo: book.titulo, autor: book.autor });
+      setEditValues({ 
+        aluno: emprestimo.aluno, 
+        livro: emprestimo.livro, 
+        status: emprestimo.status, 
+        data: emprestimo.data 
+      });
     } else {
       // salvar edição
-      if (!editValues.cdd.trim() || !editValues.titulo.trim() || !editValues.autor.trim()) {
-        alert("Preencha CDD, Título e Autor.");
+      if (!editValues.aluno.trim() || !editValues.livro.trim() || !editValues.status.trim() || !editValues.data.trim()) {
+        alert("Preencha todos os campos: Aluno, Livro, Status e Data.");
         return;
       }
-      const updated = books.map(b => (b.id === editingId ? { id: b.id, cdd: editValues.cdd.trim(), titulo: editValues.titulo.trim(), autor: editValues.autor.trim() } : b));
-      setBooks(updated);
+      const updated = emprestimos.map(e => 
+        e.id === editingId ? { 
+          id: e.id, 
+          aluno: editValues.aluno.trim(), 
+          livro: editValues.livro.trim(), 
+          status: editValues.status.trim(), 
+          data: editValues.data.trim() 
+        } : e
+      );
+      setEmprestimos(updated);
       setEditingId(null);
-      setEditValues({ cdd: "", titulo: "", autor: "" });
+      setEditValues({ aluno: "", livro: "", status: "", data: "" });
       setSelectedRows([]);
     }
   };
 
   const handleEditCancel = () => {
     setEditingId(null);
-    setEditValues({ cdd: "", titulo: "", autor: "" });
+    setEditValues({ aluno: "", livro: "", status: "", data: "" });
     setSelectedRows([]);
   };
 
   const clearFilters = () => {
-    setFilters({ id: "", cdd: "", titulo: "", autor: "" });
+    setFilters({ id: "", aluno: "", livro: "", status: "", data: "" });
   };
 
   const hasActiveFilters = () => {
-    return filters.id !== "" || filters.cdd !== "" || filters.titulo !== "" || filters.autor !== "";
+    return filters.id !== "" || filters.aluno !== "" || filters.livro !== "" || filters.status !== "" || filters.data !== "";
   };
 
   return (
@@ -209,30 +253,39 @@ const TablePage: React.FC = () => {
                       />
                     </div>
                     <div className="filter-field">
-                      <label>CDD / CDU</label>
+                      <label>Aluno</label>
                       <input 
                         type="text" 
-                        value={filters.cdd} 
-                        onChange={(e) => setFilters(prev => ({ ...prev, cdd: e.target.value }))}
-                        placeholder="Filtrar por CDD/CDU"
+                        value={filters.aluno} 
+                        onChange={(e) => setFilters(prev => ({ ...prev, aluno: e.target.value }))}
+                        placeholder="Filtrar por aluno"
                       />
                     </div>
                     <div className="filter-field">
-                      <label>Título</label>
+                      <label>Livro</label>
                       <input 
                         type="text" 
-                        value={filters.titulo} 
-                        onChange={(e) => setFilters(prev => ({ ...prev, titulo: e.target.value }))}
-                        placeholder="Filtrar por título"
+                        value={filters.livro} 
+                        onChange={(e) => setFilters(prev => ({ ...prev, livro: e.target.value }))}
+                        placeholder="Filtrar por livro"
                       />
                     </div>
                     <div className="filter-field">
-                      <label>Autor</label>
+                      <label>Status</label>
                       <input 
                         type="text" 
-                        value={filters.autor} 
-                        onChange={(e) => setFilters(prev => ({ ...prev, autor: e.target.value }))}
-                        placeholder="Filtrar por autor"
+                        value={filters.status} 
+                        onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
+                        placeholder="Filtrar por status"
+                      />
+                    </div>
+                    <div className="filter-field">
+                      <label>Data</label>
+                      <input 
+                        type="text" 
+                        value={filters.data} 
+                        onChange={(e) => setFilters(prev => ({ ...prev, data: e.target.value }))}
+                        placeholder="Filtrar por data"
                       />
                     </div>
                   </div>
@@ -278,44 +331,71 @@ const TablePage: React.FC = () => {
                 />
               </th>
               <th>ID</th>
-              <th>CDD / CDU</th>
-              <th>TÍTULO</th>
-              <th>AUTOR</th>
+              <th>NOME DO ALUNO</th>
+              <th>LIVRO</th>
+              <th>STATUS</th>
+              <th>DATA</th>
             </tr>
           </thead>
           <tbody>
-            {currentRows.map((book) => (
-              <tr key={book.id} className={selectedRows.includes(book.id) ? "selected" : ""}>
+            {currentRows.map((emprestimo) => (
+              <tr key={emprestimo.id} className={selectedRows.includes(emprestimo.id) ? "selected" : ""}>
                 <td>
                   <input
                     type="checkbox"
-                    checked={selectedRows.includes(book.id)}
-                    onChange={() => handleRowSelect(book.id)}
+                    checked={selectedRows.includes(emprestimo.id)}
+                    onChange={() => handleRowSelect(emprestimo.id)}
                   />
                 </td>
-                <td>{book.id}</td>
+                <td>{emprestimo.id}</td>
 
                 <td>
-                  {editingId === book.id ? (
-                    <input className="inline-edit" value={editValues.cdd} onChange={(e) => setEditValues(prev => ({ ...prev, cdd: e.target.value }))} />
+                  {editingId === emprestimo.id ? (
+                    <input 
+                      className="inline-edit" 
+                      value={editValues.aluno} 
+                      onChange={(e) => setEditValues(prev => ({ ...prev, aluno: e.target.value }))} 
+                    />
                   ) : (
-                    book.cdd
+                    emprestimo.aluno
                   )}
                 </td>
 
                 <td>
-                  {editingId === book.id ? (
-                    <input className="inline-edit" value={editValues.titulo} onChange={(e) => setEditValues(prev => ({ ...prev, titulo: e.target.value }))} />
+                  {editingId === emprestimo.id ? (
+                    <input 
+                      className="inline-edit" 
+                      value={editValues.livro} 
+                      onChange={(e) => setEditValues(prev => ({ ...prev, livro: e.target.value }))} 
+                    />
                   ) : (
-                    book.titulo
+                    emprestimo.livro
                   )}
                 </td>
 
                 <td>
-                  {editingId === book.id ? (
-                    <input className="inline-edit" value={editValues.autor} onChange={(e) => setEditValues(prev => ({ ...prev, autor: e.target.value }))} />
+                  {editingId === emprestimo.id ? (
+                    <input 
+                      className="inline-edit" 
+                      value={editValues.status} 
+                      onChange={(e) => setEditValues(prev => ({ ...prev, status: e.target.value }))} 
+                    />
                   ) : (
-                    book.autor
+                    <span className={`status-badge status-${emprestimo.status.toLowerCase()}`}>
+                      {emprestimo.status}
+                    </span>
+                  )}
+                </td>
+
+                <td>
+                  {editingId === emprestimo.id ? (
+                    <input 
+                      className="inline-edit" 
+                      value={editValues.data} 
+                      onChange={(e) => setEditValues(prev => ({ ...prev, data: e.target.value }))} 
+                    />
+                  ) : (
+                    emprestimo.data
                   )}
                 </td>
               </tr>
@@ -323,7 +403,7 @@ const TablePage: React.FC = () => {
 
             {currentRows.length === 0 && (
               <tr>
-                <td colSpan={5} style={{ textAlign: "center", padding: "18px 0" }}>Nenhum registro</td>
+                <td colSpan={6} style={{ textAlign: "center", padding: "18px 0" }}>Nenhum registro</td>
               </tr>
             )}
           </tbody>
@@ -341,30 +421,43 @@ const TablePage: React.FC = () => {
       {showAddModal && (
         <div className="modal-overlay">
           <div className="modal-container" role="dialog" aria-modal="true">
-            <div className="modal-header">Adicionar Novo Livro</div>
+            <div className="modal-header">Adicionar Novo Empréstimo</div>
             <div className="modal-body">
               <div className="modal-field">
-                <label>CDD / CDU</label>
+                <label>Nome do Aluno</label>
                 <input 
-                  value={newBook.cdd} 
-                  onChange={(e) => setNewBook(prev => ({ ...prev, cdd: e.target.value }))} 
-                  placeholder="Digite CDD/CDU"
+                  value={newEmprestimo.aluno} 
+                  onChange={(e) => setNewEmprestimo(prev => ({ ...prev, aluno: e.target.value }))} 
+                  placeholder="Digite o nome do aluno"
                 />
               </div>
               <div className="modal-field">
-                <label>Título</label>
+                <label>Livro</label>
                 <input 
-                  value={newBook.titulo} 
-                  onChange={(e) => setNewBook(prev => ({ ...prev, titulo: e.target.value }))} 
-                  placeholder="Digite o título"
+                  value={newEmprestimo.livro} 
+                  onChange={(e) => setNewEmprestimo(prev => ({ ...prev, livro: e.target.value }))} 
+                  placeholder="Digite o nome do livro"
                 />
               </div>
               <div className="modal-field">
-                <label>Autor</label>
+                <label>Status</label>
+                <select 
+                  value={newEmprestimo.status} 
+                  onChange={(e) => setNewEmprestimo(prev => ({ ...prev, status: e.target.value }))}
+                >
+                  <option value="">Selecione o status</option>
+                  <option value="Ativo">Ativo</option>
+                  <option value="Devolvido">Devolvido</option>
+                  <option value="Atrasado">Atrasado</option>
+                  <option value="Renovado">Renovado</option>
+                </select>
+              </div>
+              <div className="modal-field">
+                <label>Data</label>
                 <input 
-                  value={newBook.autor} 
-                  onChange={(e) => setNewBook(prev => ({ ...prev, autor: e.target.value }))} 
-                  placeholder="Digite o autor"
+                  type="date"
+                  value={newEmprestimo.data} 
+                  onChange={(e) => setNewEmprestimo(prev => ({ ...prev, data: e.target.value }))} 
                 />
               </div>
             </div>
@@ -395,4 +488,4 @@ const TablePage: React.FC = () => {
   );
 };
 
-export default TablePage;
+export default EmprestimosPage;

@@ -1,5 +1,4 @@
 import { NavLink } from "react-router-dom";
-import "./Sidebar.css";
 import { getAccessibleRoutes } from "../../service/routeGuards";
 
 import dashboardIcon from "../../assets/img/dashboard.png";

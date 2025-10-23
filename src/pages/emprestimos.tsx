@@ -1,9 +1,10 @@
 import "../styles/global.css";
+import LoanTablePage from "../components/TablePage/LoanTablePage";
 
 export default function Emprestimos() {
   return (
-    <div className="loan-page" style={{ padding: "10px", backgroundColor: "lightblue", marginTop: "50px" }}>
-      <h1>🚀 Testando Emprestimos</h1>
+    <div className="archive-page">
+      <LoanTablePage />
     </div>
   );
 }
