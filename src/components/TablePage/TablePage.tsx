@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import "./TablePage.css";
 
 import plusIcon from "../../assets/img/plus.png";
 import trashIcon from "../../assets/img/trash.png";

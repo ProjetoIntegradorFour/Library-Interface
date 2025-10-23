@@ -1,5 +1,3 @@
-import "./Table.css";
-
 interface Book {
   id: string;
   titulo: string;
