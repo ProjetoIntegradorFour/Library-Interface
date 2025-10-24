@@ -4,7 +4,7 @@ export const login = async (cpf: string, password: string) => {
   const response = await fetch(`${API_URL}/signin`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ cpf, password }),
+    body: JSON.stringify({ cpf,  }),
   });
 
   if (!response.ok) throw new Error("Login failed");

@@ -1,10 +1,8 @@
-// src/routes/router.tsx
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { Dashboard, Login, Acervo, Emprestimos, Atrasos, Relatorios, Perfil, Configuracao } from "../pages";
-import ProtectedRoute from "../components/protectedRoute";
+import ProtectedRoute from "../components/ProtectedRoute";
 import ProtectedLayout from "./ProtectedLayout";
 
-// Layout wrapper component
 const LayoutWrapper = ({ children }: { children: React.ReactNode }) => (
   <ProtectedLayout>{children}</ProtectedLayout>
 );
