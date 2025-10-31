@@ -47,19 +47,18 @@
 .loan-page,
 .profile-page {
   margin-left: var(--sidebar-width);
-  padding: 10px;
   display: block;
 }
 
 .dashboard-page {
-  margin-top: -20px;
+  margin-top: -60px;
+  margin-bottom: -60px;
   margin-left: var(--sidebar-width);
-  padding: 0px 40px 40px;
+  padding: 0px 30px 30px;
   display: grid;
   grid-template-columns: 320px 1fr;
-  gap: 28px;
   align-items: start;
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 300px);
 }
 
 .archive-page {
@@ -194,11 +193,12 @@
 /* ===== COMPONENTES DO DASHBOARD ===== */
 /* Coluna Esquerda - Cards */
 .dashboard-left {
+  margin-top: 50px;
+  margin-bottom: 50px;
   display: flex;
   flex-direction: column;
-  gap: 45px;
+  gap: 30px;
   align-items: flex-start;
-  padding-left: 6px;
 }
 
 .dashboard-left .card-title {
@@ -236,7 +236,7 @@
 
 .dashboard-right .custom-table-container {
   width: 100%;
-  max-width: 1025px;
+  max-width: 1500px;
   margin: 0px 0 0 40px;
   align-self: start;
 }
@@ -264,23 +264,23 @@
 .dashboard-right .line-chart-wrapper {
   margin-top: 10px;
   background-color: var(--pale-green);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 6px;
+  padding: 25px;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  max-width: 1030px;
+  max-width: 1500px;
   margin-left: 40px;
-  min-height: 350px;
+  min-height: 500px;
 }
 
 .dashboard-right .line-chart-container {
-  width: 100%;
+  width: 1000px;
   height: 500px;
   background: var(--neutral-white);
   border-radius: 6px;
-  padding: 16px;
+  padding: 10px;
   box-shadow: var(--shadow-light);
 }
 
@@ -318,8 +318,8 @@
 
 .card {
   display: flex;
-  width: 24rem;
-  height: 10rem;
+  width: 55rem;
+  height: 110rem;
   background-color: var(--neutral-white);
   border: var(--primary-purple) 3px solid;
   border-radius: var(--border-radius);
@@ -356,6 +356,7 @@
 
 .custom-table {
   width: 100%;
+  height: 370px;
   border-collapse: collapse;
   background-color: var(--neutral-light);
   border-radius: var(--border-radius);
@@ -675,7 +676,7 @@
 
 .filter-field label {
   font-weight: 600;
-  color: var(--light-green);
+  color: var(--neutral-dark);
   font-size: 0.9rem;
   margin-bottom: 4px;
 }
@@ -963,7 +964,6 @@
     margin-left: 0;
     padding-left: 20px;
     grid-template-columns: 1fr;
-    padding-top: 140px;
   }
 
   .dashboard-left,
