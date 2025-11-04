@@ -1,20 +1,18 @@
 import { Navigate } from "react-router-dom";
-import { isAuthenticated } from "../service/authService";
-import { canAccessRoute } from "../service/routeGuards";
+import { HasEnvBypass, isAuthenticated } from "../service/authService";
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-    const currentPath = window.location.pathname;
+    const isAuth = isAuthenticated();
+    const hasBypass = HasEnvBypass();
 
-    if (!isAuthenticated()) {
+    console.log("ProtectedRoute - isAuth:", isAuth, "hasBypass:", hasBypass);
+
+    if (!isAuth && !hasBypass) {
         return <Navigate to="/login" replace />;
-    }
-
-    if (!canAccessRoute(currentPath)) {
-        return <Navigate to="/" replace />;
     }
 
     return <>{children}</>;
