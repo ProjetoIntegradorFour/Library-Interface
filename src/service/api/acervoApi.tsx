@@ -1,29 +1,8 @@
 import { apiService } from "../apiService";
+import type { Book, PaginatedResponse } from "../../types/book";
 
-// Quando tiver o endpoint real, substitua a string abaixo
-const ACERVO_ENDPOINT = "http://localhost:8080/api/collections";
+const ACERVO_ENDPOINT = "/collections";
 
-// Função para buscar todos os livros
-export const getLivros = async () => {
-  return await apiService.get(ACERVO_ENDPOINT);
-};
-
-// Função para buscar um livro específico
-export const getLivroById = async (id: string) => {
-  return await apiService.get(`${ACERVO_ENDPOINT}/${id}`);
-};
-
-// Função para adicionar um novo livro
-export const addLivro = async (livro: any) => {
-  return await apiService.post(ACERVO_ENDPOINT, livro);
-};
-
-// Função para atualizar um livro
-export const updateLivro = async (id: string, livro: any) => {
-  return await apiService.put(`${ACERVO_ENDPOINT}/${id}`, livro);
-};
-
-// Função para deletar um livro
-export const deleteLivro = async (id: string) => {
-  return await apiService.delete(`${ACERVO_ENDPOINT}/${id}`);
+export const getLivros = async (page: number = 0, size: number = 14): Promise<PaginatedResponse<Book>> => {
+  return await apiService.get(`${ACERVO_ENDPOINT}?page=${page}&size=${size}`);
 };

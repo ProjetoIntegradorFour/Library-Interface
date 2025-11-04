@@ -2,31 +2,46 @@ import "../styles/global.css";
 import TablePage from "../components/TablePage/TablePage";
 import { useEffect, useState } from "react";
 import { getLivros } from "../service/api/acervoApi";
+import type { Book } from "../types/book";
 
 export default function Acervo() {
   const [loading, setLoading] = useState(true);
+  const [books, setBooks] = useState<Book[]>([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     const fetchLivros = async () => {
+      console.log("[Acervo] Buscando livros página:", currentPage);
       try {
-        const data = await getLivros();
-        // ✅ Salva no localStorage para o TablePage ler
-        localStorage.setItem("books", JSON.stringify(data));
+        const response = await getLivros(currentPage);
+        console.log("[Acervo] Resposta paginada:", response);
+        setBooks(response.content);
+        setTotalPages(response.totalPages);
       } catch (error) {
-        console.error("Erro ao carregar livros:", error);
+        console.error("[Acervo] Erro ao carregar livros:", error);
+        setBooks([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchLivros();
-  }, []);
+  }, [currentPage]);
 
-  if (loading) return <p>Carregando livros...</p>;
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
 
   return (
     <div className="archive-page">
-      <TablePage />
+      <TablePage
+        books={books}
+        loading={loading}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 }

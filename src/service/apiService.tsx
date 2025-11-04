@@ -15,12 +15,18 @@ class ApiService {
             ...options,
         };
 
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+        let response;
+        try {
+            response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+        } catch (error: unknown) {
+            throw new Error("Network error: " + error.message);
+        }
 
-        // Auto-handle auth errors
         if (response.status === 401 || response.status === 403) {
-            logout();
-            window.location.href = "/login";
+            if (getToken()) {
+                logout();
+                window.location.href = "/login";
+            }
             throw new Error("Authentication required");
         }
 
