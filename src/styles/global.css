@@ -62,10 +62,9 @@
 }
 
 .archive-page {
-  margin-top: -50px;
-  margin-left: 380px;
-  padding: 0px 40px 40px;
-  min-height: calc(100vh - 120px);
+  margin-top: -60px;
+  margin-left: var(--sidebar-width);
+  min-height: calc(100vh - 300px);
 }
 
 /* ===== COMPONENTE HEADER ===== */
@@ -356,7 +355,7 @@
 
 .custom-table {
   width: 100%;
-  height: 370px;
+  height: 700px;
   border-collapse: collapse;
   background-color: var(--neutral-light);
   border-radius: var(--border-radius);
@@ -387,8 +386,9 @@
 
 /* Container Principal da Tabela */
 .table-page-container {
-  max-width: 1400px;
-  margin: 20px auto;
+  min-width: 1400px;
+  min-height: 960px;
+  margin-bottom: 20px auto;
   padding: 20px;
   background-color: #dbe4f0;
   border-radius: 15px;
@@ -448,6 +448,7 @@
 .delete-btn:hover,
 .edit-btn:hover {
   background-color: #dddddd;
+  box-shadow: 0 6px 14px var(--dark-green);
 }
 
 .cancel-edit-btn {
@@ -810,6 +811,14 @@
   background-color: var(--dark-green);
   color: var(--neutral-white);
   border-color: var(--dark-green);
+}
+
+.pagination button:hover{
+  background-color: var(--dark-green);
+  color: var(--neutral-white);
+  border-color: var(--dark-green);
+    box-shadow: 0 6px 14px var(--dark-green);
+
 }
 
 .pagination button:disabled {
