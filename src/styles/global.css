@@ -51,8 +51,8 @@
 }
 
 .dashboard-page {
-  margin-top: -60px;
-  margin-bottom: -60px;
+  margin-top: -50px;
+  margin-bottom: -50px;
   margin-left: var(--sidebar-width);
   padding: 0px 30px 30px;
   display: grid;
@@ -236,7 +236,14 @@
 .dashboard-right .custom-table-container {
   width: 100%;
   max-width: 1500px;
-  margin: 0px 0 0 40px;
+  margin: 0px 0 0 30px;
+  align-self: start;
+}
+
+.dashboard-right .custom-table {
+  width: 100%;
+  max-width: 1500px;
+  max-height: 250px;
   align-self: start;
 }
 
@@ -270,13 +277,13 @@
   align-items: center;
   width: 100%;
   max-width: 1500px;
-  margin-left: 40px;
-  min-height: 500px;
+  margin-left: 30px;
+  min-height: 600px;
 }
 
 .dashboard-right .line-chart-container {
-  width: 1000px;
-  height: 500px;
+  width: 1030px;
+  height: 550px;
   background: var(--neutral-white);
   border-radius: 6px;
   padding: 10px;
