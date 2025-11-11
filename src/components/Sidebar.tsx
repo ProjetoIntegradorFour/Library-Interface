@@ -1,13 +1,13 @@
 import { NavLink } from "react-router-dom";
-import { getAccessibleRoutes } from "../../service/routeGuards";
+import { getAccessibleRoutes } from "../service/routeGuards";
 
-import dashboardIcon from "../../assets/img/dashboard.png";
-import acervoIcon from "../../assets/img/book.png";
-import emprestimosIcon from "../../assets/img/user.png";
-import atrasosIcon from "../../assets/img/money.png";
-import relatoriosIcon from "../../assets/img/document.png";
-import perfilIcon from "../../assets/img/perfil.png";
-import configIcon from "../../assets/img/configuracoes.png";
+import dashboardIcon from "../assets/img/dashboard.png";
+import acervoIcon from "../assets/img/book.png";
+import emprestimosIcon from "../assets/img/user.png";
+import atrasosIcon from "../assets/img/money.png";
+import relatoriosIcon from "../assets/img/document.png";
+import perfilIcon from "../assets/img/perfil.png";
+import configIcon from "../assets/img/configuracoes.png";
 
 export default function Sidebar() {
   const accessibleRoutes = getAccessibleRoutes();

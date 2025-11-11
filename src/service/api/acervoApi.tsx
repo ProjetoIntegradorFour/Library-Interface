@@ -3,6 +3,25 @@ import type { Book, PaginatedResponse } from "../../types/book";
 
 const ACERVO_ENDPOINT = "/collections";
 
-export const getLivros = async (page: number = 0, size: number = 14): Promise<PaginatedResponse<Book>> => {
-  return await apiService.get(`${ACERVO_ENDPOINT}?page=${page}&size=${size}`);
+interface GetLivrosParams {
+  page: number;
+  size?: number;
+  id?: string;
+  cdd?: string;
+  titulo?: string;
+  autor?: string;
+  sort?: string;
+  order?: 'asc' | 'desc';
+}
+
+export const getLivros = async (params: GetLivrosParams): Promise<PaginatedResponse<Book>> => {
+  const { page, size = 14, ...filters } = params;
+  
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    size: size.toString(),
+    ...filters
+  });
+
+  return await apiService.get(`${ACERVO_ENDPOINT}?${queryParams}`);
 };

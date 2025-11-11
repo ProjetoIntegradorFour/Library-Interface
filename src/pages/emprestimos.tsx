@@ -1,5 +1,5 @@
 import "../styles/global.css";
-import LoanTablePage from "../components/TablePage/LoanTablePage";
+import LoanTablePage from "../components/MockedTables/LoanTablePage";
 
 export default function Emprestimos() {
   return (

@@ -1,7 +1,7 @@
 import "../styles/global.css";
-import Table from "../components/Table/Table";
-import LineChartLoans from "../components/LineGraph/LineChartLoans";
-import Card from "../components/Card/Card";
+import Table from "../components/Table";
+import LineChartLoans from "../components/LineChartLoans";
+import Card from "../components/Card";
 
 import warningLogo from "../assets/img/warningLogo.png";
 import bookLogo from "../assets/img/bookLogo.png";
