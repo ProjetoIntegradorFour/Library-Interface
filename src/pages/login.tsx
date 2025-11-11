@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/login.css";
 import * as authService from "../service/authService";
 
@@ -6,6 +6,12 @@ export default function Login() {
   const [cpf, setCpf] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (authService.isAuthenticated() || authService.HasEnvBypass()) {
+      window.location.href = "/";
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
