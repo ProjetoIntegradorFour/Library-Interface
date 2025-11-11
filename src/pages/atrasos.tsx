@@ -1,5 +1,5 @@
 import "../styles/global.css";
-import PaymentTablePage from "../components/PaymentTablePage";
+import PaymentTablePage from "../components/MockedTables/PaymentTablePage";
 
 export default function Emprestimos() {
   return (
