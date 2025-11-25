@@ -20,7 +20,7 @@ export default function Emprestimos() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   //const [payments, setPayments] = useState<Payment[]>([]);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(0)
 
   const urlState: URLState = {
     page: parseInt(searchParams.get('page') || '0'),
@@ -66,7 +66,7 @@ export default function Emprestimos() {
     const newParams = new URLSearchParams(searchParams);
 
     Object.entries(update).forEach(([key, value]) => {
-      if (value !== undefined) {
+      if (value !== undefined && value !== null && value !== '') {
         newParams.set(key, value.toString());
       } else {
         newParams.delete(key);

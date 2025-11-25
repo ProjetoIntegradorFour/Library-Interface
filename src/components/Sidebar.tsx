@@ -58,16 +58,6 @@ export default function Sidebar() {
         </NavLink>
       )}
 
-      {shouldShowRoute("/relatorios") && (
-        <NavLink
-          to="/relatorios"
-          className={({ isActive }) => `menu-item ${isActive ? "active" : ""}`}
-        >
-          <img src={relatoriosIcon} alt="Relatórios" className="icon" />
-          Relatórios
-        </NavLink>
-      )}
-
       <div className="menu-bottom">
         {shouldShowRoute("/perfil") && (
           <NavLink
