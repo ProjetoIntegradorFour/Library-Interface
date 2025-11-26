@@ -51,10 +51,9 @@
 }
 
 .dashboard-page {
-  margin-top: -50px;
-  margin-bottom: -50px;
+  margin-top: -70px;
   margin-left: var(--sidebar-width);
-  padding: 0px 30px 30px;
+  padding: 0px 20px 20px;
   display: grid;
   grid-template-columns: 320px 1fr;
   align-items: start;
@@ -192,8 +191,6 @@
 /* ===== COMPONENTES DO DASHBOARD ===== */
 /* Coluna Esquerda - Cards */
 .dashboard-left {
-  margin-top: 50px;
-  margin-bottom: 50px;
   display: flex;
   flex-direction: column;
   gap: 30px;
@@ -201,10 +198,11 @@
 }
 
 .dashboard-left .card-title {
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   font-weight: 700;
-  margin: 0 0 8px;
+  margin-bottom: 10px;
   color: var(--neutral-dark);
+  letter-spacing: 0.3px;
 }
 
 .dashboard-left .card-container,
@@ -213,16 +211,38 @@
   max-width: 100%;
 }
 
+/* Card mais moderno */
 .dashboard-left .card {
   height: var(--card-height);
-  border-radius: 10px;
-  padding: 8px;
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: var(--neutral-light, #fff);
+
+  /* Sombra suave e elegante */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Efeito hover profissional */
+.dashboard-left .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* Ajuste da imagem */
 .dashboard-left .card-image img {
-  max-width: 70%;
-  max-height: 70%;
+  width: 70%;
+  height: auto;
+  max-height: 65%;
   object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  opacity: 0.95;
+  transition: opacity 0.2s ease;
+}
+
+.dashboard-left .card-image img:hover {
+  opacity: 1;
 }
 
 /* Coluna Direita - Tabela e Gráfico */
@@ -268,10 +288,10 @@
 
 /* Gráfico */
 .dashboard-right .line-chart-wrapper {
-  margin-top: 10px;
+  margin-top: 20px;
   background-color: var(--pale-green);
   border-radius: 6px;
-  padding: 25px;
+  padding: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -325,7 +345,7 @@
 .card {
   display: flex;
   width: 55rem;
-  height: 110rem;
+  height: 10rem;
   background-color: var(--neutral-white);
   border: var(--primary-purple) 3px solid;
   border-radius: var(--border-radius);
