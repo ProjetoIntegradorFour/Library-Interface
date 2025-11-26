@@ -158,7 +158,7 @@
 .menu-bottom {
   display: flex;
   gap: 8px;
-  margin-top: 490px;
+  margin-top: 590px;
 }
 
 .mini-item {
@@ -191,6 +191,7 @@
 /* ===== COMPONENTES DO DASHBOARD ===== */
 /* Coluna Esquerda - Cards */
 .dashboard-left {
+  margin-top: 30px;
   display: flex;
   flex-direction: column;
   gap: 30px;
