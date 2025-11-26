@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 
 import plusIcon from "../../assets/img/plus.png";
 import trashIcon from "../../assets/img/trash.png";
@@ -20,52 +20,51 @@ interface FilterState {
   data: string;
 }
 
+const DEFAULT_FILTERS: FilterState = {
+  id: "",
+  aluno: "",
+  livro: "",
+  multa: "",
+  data: "",
+};
+
 const AtrasosPage: React.FC = () => {
   const [atrasos, setAtrasos] = useState<Atraso[]>([]);
-  const [filteredAtrasos, setFilteredAtrasos] = useState<Atraso[]>([]);
+  const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
-  const [showFilter, setShowFilter] = useState<boolean>(false);
-  const [filters, setFilters] = useState<FilterState>({ 
-    id: "", 
-    aluno: "", 
-    livro: "", 
-    multa: "", 
-    data: "" 
-  });
+  const [showFilter, setShowFilter] = useState(false);
 
-  const [showAddModal, setShowAddModal] = useState<boolean>(false);
-  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const [newAtraso, setNewAtraso] = useState<Omit<Atraso, "id">>({ 
-    aluno: "", 
-    livro: "", 
-    multa: "", 
-    data: "" 
+  const [newAtraso, setNewAtraso] = useState<Omit<Atraso, "id">>({
+    aluno: "",
+    livro: "",
+    multa: "",
+    data: "",
   });
 
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editValues, setEditValues] = useState<Omit<Atraso, "id">>({ 
-    aluno: "", 
-    livro: "", 
-    multa: "", 
-    data: "" 
+  const [editValues, setEditValues] = useState<Omit<Atraso, "id">>({
+    aluno: "",
+    livro: "",
+    multa: "",
+    data: "",
   });
 
   // paginação
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 14;
 
   const filterRef = useRef<HTMLDivElement | null>(null);
 
-  // load localStorage
+  /** Carrega dados do localStorage */
   useEffect(() => {
     const stored = localStorage.getItem("atrasos");
+
     if (stored) {
-      const parsed: Atraso[] = JSON.parse(stored);
-      setAtrasos(parsed);
-      setFilteredAtrasos(parsed);
+      setAtrasos(JSON.parse(stored));
     } else {
-      // Dados de exemplo para demonstração
       const exemploAtrasos: Atraso[] = [
         { id: 1, aluno: "João Silva", livro: "Dom Casmurro", multa: "R$ 5,00", data: "2024-01-15" },
         { id: 2, aluno: "Maria Santos", livro: "O Cortiço", multa: "R$ 10,00", data: "2024-01-10" },
@@ -74,156 +73,103 @@ const AtrasosPage: React.FC = () => {
         { id: 5, aluno: "Carlos Lima", livro: "O Guarani", multa: "R$ 12,00", data: "2024-01-18" },
       ];
       setAtrasos(exemploAtrasos);
-      setFilteredAtrasos(exemploAtrasos);
     }
   }, []);
 
-  // persist
+  /** Persistência */
   useEffect(() => {
     localStorage.setItem("atrasos", JSON.stringify(atrasos));
   }, [atrasos]);
 
-  // fechar filtro clicando fora
+  /** Fecha o filtro ao clicar fora */
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
         setShowFilter(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // aplicar filtros
-  useEffect(() => {
-    let result = atrasos.slice();
-    if (filters.id) result = result.filter(a => a.id.toString().includes(filters.id));
-    if (filters.aluno) result = result.filter(a => a.aluno.toLowerCase().includes(filters.aluno.toLowerCase()));
-    if (filters.livro) result = result.filter(a => a.livro.toLowerCase().includes(filters.livro.toLowerCase()));
-    if (filters.multa) result = result.filter(a => a.multa.toLowerCase().includes(filters.multa.toLowerCase()));
-    if (filters.data) result = result.filter(a => a.data.includes(filters.data));
-    
-    setFilteredAtrasos(result);
-    setCurrentPage(1);
+  /** Filtros aplicados com memoization */
+  const filteredAtrasos = useMemo(() => {
+    return atrasos.filter((a) => {
+      if (filters.id && !a.id.toString().includes(filters.id)) return false;
+      if (filters.aluno && !a.aluno.toLowerCase().includes(filters.aluno.toLowerCase())) return false;
+      if (filters.livro && !a.livro.toLowerCase().includes(filters.livro.toLowerCase())) return false;
+      if (filters.multa && !a.multa.toLowerCase().includes(filters.multa.toLowerCase())) return false;
+      if (filters.data && !a.data.includes(filters.data)) return false;
+      return true;
+    });
   }, [atrasos, filters]);
 
-  // paginação
+  /** Paginação */
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredAtrasos.slice(indexOfFirstRow, indexOfLastRow);
   const totalPages = Math.max(1, Math.ceil(filteredAtrasos.length / rowsPerPage));
 
-  // seleção
+  /** Seleção de linhas */
   const handleRowSelect = (id: number) => {
-    setSelectedRows(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
+    setSelectedRows((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
   };
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) setSelectedRows(currentRows.map(r => r.id));
+    if (e.target.checked) setSelectedRows(currentRows.map((r) => r.id));
     else setSelectedRows([]);
   };
 
-  // adicionar (abre modal)
-  const handleAddOpen = () => {
-    setNewAtraso({ aluno: "", livro: "", multa: "", data: "" });
-    setShowAddModal(true);
-  };
-
+  /** Adicionar registro */
   const handleAddConfirm = () => {
-    if (!newAtraso.aluno.trim() || !newAtraso.livro.trim() || !newAtraso.multa.trim() || !newAtraso.data.trim()) {
-      alert("Preencha todos os campos: Aluno, Livro, Multa e Data.");
-      return;
-    }
-    const newId = atrasos.length > 0 ? Math.max(...atrasos.map(a => a.id)) + 1 : 1;
-    const entry: Atraso = { 
-      id: newId, 
-      aluno: newAtraso.aluno.trim(), 
-      livro: newAtraso.livro.trim(), 
-      multa: newAtraso.multa.trim(), 
-      data: newAtraso.data.trim() 
-    };
-    const updated = [...atrasos, entry];
-    setAtrasos(updated);
-    setShowAddModal(false);
-  };
+    const { aluno, livro, multa, data } = newAtraso;
 
-  const handleAddCancel = () => {
+    if (!aluno || !livro || !multa || !data) return alert("Preencha todos os campos!");
+
+    const newId = atrasos.length ? Math.max(...atrasos.map((a) => a.id)) + 1 : 1;
+
+    const entry: Atraso = { id: newId, ...newAtraso };
+
+    setAtrasos((prev) => [...prev, entry]);
     setShowAddModal(false);
     setNewAtraso({ aluno: "", livro: "", multa: "", data: "" });
   };
 
-  // deletar (abre modal)
-  const handleDeleteOpen = () => {
-    if (selectedRows.length === 0) {
-      alert("Selecione ao menos uma linha para deletar.");
-      return;
-    }
-    setShowDeleteModal(true);
-  };
-
+  /** Exclusão */
   const handleDeleteConfirm = () => {
-    const updated = atrasos.filter(a => !selectedRows.includes(a.id));
-    setAtrasos(updated);
+    setAtrasos((prev) => prev.filter((a) => !selectedRows.includes(a.id)));
     setSelectedRows([]);
     setShowDeleteModal(false);
   };
 
-  const handleDeleteCancel = () => {
-    setShowDeleteModal(false);
-  };
-
-  // editar: só quando uma linha selecionada
+  /** Edição */
   const handleEditToggle = () => {
     if (editingId === null) {
-      // entrar em modo edição
-      if (selectedRows.length !== 1) {
-        alert("Selecione exatamente uma linha para editar.");
-        return;
-      }
+      if (selectedRows.length !== 1) return alert("Selecione exatamente uma linha.");
+
       const id = selectedRows[0];
-      const atraso = atrasos.find(a => a.id === id)!;
+      const atraso = atrasos.find((a) => a.id === id)!;
+
       setEditingId(id);
-      setEditValues({ 
-        aluno: atraso.aluno, 
-        livro: atraso.livro, 
-        multa: atraso.multa, 
-        data: atraso.data 
-      });
+      setEditValues({ aluno: atraso.aluno, livro: atraso.livro, multa: atraso.multa, data: atraso.data });
     } else {
-      // salvar edição
-      if (!editValues.aluno.trim() || !editValues.livro.trim() || !editValues.multa.trim() || !editValues.data.trim()) {
-        alert("Preencha todos os campos: Aluno, Livro, Multa e Data.");
-        return;
-      }
-      const updated = atrasos.map(a => 
-        a.id === editingId ? { 
-          id: a.id, 
-          aluno: editValues.aluno.trim(), 
-          livro: editValues.livro.trim(), 
-          multa: editValues.multa.trim(), 
-          data: editValues.data.trim() 
-        } : a
+      const { aluno, livro, multa, data } = editValues;
+      if (!aluno || !livro || !multa || !data) return alert("Preencha todos os campos!");
+
+      setAtrasos((prev) =>
+        prev.map((a) => (a.id === editingId ? { id: a.id, ...editValues } : a))
       );
-      setAtrasos(updated);
+
       setEditingId(null);
       setEditValues({ aluno: "", livro: "", multa: "", data: "" });
       setSelectedRows([]);
     }
   };
 
-  const handleEditCancel = () => {
-    setEditingId(null);
-    setEditValues({ aluno: "", livro: "", multa: "", data: "" });
-    setSelectedRows([]);
-  };
-
-  const clearFilters = () => {
-    setFilters({ id: "", aluno: "", livro: "", multa: "", data: "" });
-  };
-
-  const hasActiveFilters = () => {
-    return filters.id !== "" || filters.aluno !== "" || filters.livro !== "" || filters.multa !== "" || filters.data !== "";
-  };
+  const hasActiveFilters = () => Object.values(filters).some((v) => v !== "");
 
   return (
     <div className="table-page-container">
@@ -231,68 +177,35 @@ const AtrasosPage: React.FC = () => {
         <div className="header-buttons-container">
           <div className="table-controls">
             <div className="filter-container" ref={filterRef}>
-              <button 
-                className={`filter-btn ${hasActiveFilters() ? 'active' : ''}`}
+              <button
+                className={`filter-btn ${hasActiveFilters() ? "active" : ""}`}
                 onClick={() => setShowFilter(!showFilter)}
               >
                 Filter
                 {hasActiveFilters() && <span className="filter-indicator"></span>}
               </button>
+
               {showFilter && (
                 <div className="filter-popup">
                   <div className="filter-header">
                     <h3>Filtrar por</h3>
                     <button className="close-filter-btn" onClick={() => setShowFilter(false)}>×</button>
                   </div>
+
                   <div className="filter-fields">
-                    <div className="filter-field">
-                      <label>ID</label>
-                      <input 
-                        type="text" 
-                        value={filters.id} 
-                        onChange={(e) => setFilters(prev => ({ ...prev, id: e.target.value }))}
-                        placeholder="Filtrar por ID"
-                      />
-                    </div>
-                    <div className="filter-field">
-                      <label>Aluno</label>
-                      <input 
-                        type="text" 
-                        value={filters.aluno} 
-                        onChange={(e) => setFilters(prev => ({ ...prev, aluno: e.target.value }))}
-                        placeholder="Filtrar por aluno"
-                      />
-                    </div>
-                    <div className="filter-field">
-                      <label>Livro</label>
-                      <input 
-                        type="text" 
-                        value={filters.livro} 
-                        onChange={(e) => setFilters(prev => ({ ...prev, livro: e.target.value }))}
-                        placeholder="Filtrar por livro"
-                      />
-                    </div>
-                    <div className="filter-field">
-                      <label>Multa</label>
-                      <input 
-                        type="text" 
-                        value={filters.multa} 
-                        onChange={(e) => setFilters(prev => ({ ...prev, multa: e.target.value }))}
-                        placeholder="Filtrar por multa"
-                      />
-                    </div>
-                    <div className="filter-field">
-                      <label>Data</label>
-                      <input 
-                        type="text" 
-                        value={filters.data} 
-                        onChange={(e) => setFilters(prev => ({ ...prev, data: e.target.value }))}
-                        placeholder="Filtrar por data"
-                      />
-                    </div>
+                    {Object.keys(filters).map((key) => (
+                      <div className="filter-field" key={key}>
+                        <label>{key.toUpperCase()}</label>
+                        <input
+                          value={(filters as any)[key]}
+                          onChange={(e) => setFilters((prev) => ({ ...prev, [key]: e.target.value }))}
+                        />
+                      </div>
+                    ))}
                   </div>
+
                   <div className="filter-actions">
-                    <button className="clear-filters-btn" onClick={clearFilters}>
+                    <button className="clear-filters-btn" onClick={() => setFilters(DEFAULT_FILTERS)}>
                       Limpar Filtros
                     </button>
                   </div>
@@ -302,20 +215,22 @@ const AtrasosPage: React.FC = () => {
           </div>
 
           <div className="table-buttons">
-            <button className="add-btn" onClick={handleAddOpen}>
-              <img src={plusIcon} alt="Adicionar" className="button-icon" />
+            <button className="add-btn" onClick={() => setShowAddModal(true)}>
+              <img src={plusIcon} className="button-icon" />
             </button>
 
-            <button className="delete-btn" onClick={handleDeleteOpen}>
-              <img src={trashIcon} alt="Deletar" className="button-icon" />
+            <button className="delete-btn" onClick={() => selectedRows.length && setShowDeleteModal(true)}>
+              <img src={trashIcon} className="button-icon" />
             </button>
 
-            <button className="edit-btn" onClick={handleEditToggle} title={editingId ? "Salvar edição" : "Editar selecionado"}>
-              <img src={editIcon} alt={editingId ? "Salvar" : "Editar"} className="button-icon" />
+            <button className="edit-btn" onClick={handleEditToggle}>
+              <img src={editIcon} className="button-icon" />
             </button>
 
-            {editingId !== null && (
-              <button className="cancel-edit-btn" onClick={handleEditCancel}>Cancelar</button>
+            {editingId && (
+              <button className="cancel-edit-btn" onClick={() => setEditingId(null)}>
+                Cancelar
+              </button>
             )}
           </div>
         </div>
@@ -333,133 +248,76 @@ const AtrasosPage: React.FC = () => {
                 />
               </th>
               <th>ID</th>
-              <th>NOME DO ALUNO</th>
+              <th>ALUNO</th>
               <th>LIVRO</th>
               <th>MULTA</th>
               <th>DATA</th>
             </tr>
           </thead>
+
           <tbody>
-            {currentRows.map((atraso) => (
-              <tr key={atraso.id} className={selectedRows.includes(atraso.id) ? "selected" : ""}>
+            {currentRows.map((row) => (
+              <tr key={row.id} className={selectedRows.includes(row.id) ? "selected" : ""}>
                 <td>
-                  <input
-                    type="checkbox"
-                    checked={selectedRows.includes(atraso.id)}
-                    onChange={() => handleRowSelect(atraso.id)}
-                  />
-                </td>
-                <td>{atraso.id}</td>
-
-                <td>
-                  {editingId === atraso.id ? (
-                    <input 
-                      className="inline-edit" 
-                      value={editValues.aluno} 
-                      onChange={(e) => setEditValues(prev => ({ ...prev, aluno: e.target.value }))} 
-                    />
-                  ) : (
-                    atraso.aluno
-                  )}
+                  <input type="checkbox" checked={selectedRows.includes(row.id)} onChange={() => handleRowSelect(row.id)} />
                 </td>
 
-                <td>
-                  {editingId === atraso.id ? (
-                    <input 
-                      className="inline-edit" 
-                      value={editValues.livro} 
-                      onChange={(e) => setEditValues(prev => ({ ...prev, livro: e.target.value }))} 
-                    />
-                  ) : (
-                    atraso.livro
-                  )}
-                </td>
+                <td>{row.id}</td>
 
-                <td>
-                  {editingId === atraso.id ? (
-                    <input 
-                      className="inline-edit" 
-                      value={editValues.multa} 
-                      onChange={(e) => setEditValues(prev => ({ ...prev, multa: e.target.value }))} 
-                    />
-                  ) : (
-                    <span className="multa-value">
-                      {atraso.multa}
-                    </span>
-                  )}
-                </td>
-
-                <td>
-                  {editingId === atraso.id ? (
-                    <input 
-                      className="inline-edit" 
-                      value={editValues.data} 
-                      onChange={(e) => setEditValues(prev => ({ ...prev, data: e.target.value }))} 
-                    />
-                  ) : (
-                    atraso.data
-                  )}
-                </td>
+                {["aluno", "livro", "multa", "data"].map((field) => (
+                  <td key={field}>
+                    {editingId === row.id ? (
+                      <input
+                        className="inline-edit"
+                        value={(editValues as any)[field]}
+                        onChange={(e) => setEditValues((prev) => ({ ...prev, [field]: e.target.value }))}
+                      />
+                    ) : (
+                      (row as any)[field]
+                    )}
+                  </td>
+                ))}
               </tr>
             ))}
 
             {currentRows.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ textAlign: "center", padding: "18px 0" }}>Nenhum registro</td>
+                <td colSpan={6} style={{ textAlign: "center", padding: "15px 0" }}>
+                  Nenhum registro encontrado
+                </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
 
-      {/* Paginação */}
       <div className="pagination">
         <span>Página {currentPage} de {totalPages}</span>
-        <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>Anterior</button>
-        <button onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>Próxima</button>
+        <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>Anterior</button>
+        <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Próxima</button>
       </div>
 
       {/* MODAL ADD */}
       {showAddModal && (
         <div className="modal-overlay">
-          <div className="modal-container" role="dialog" aria-modal="true">
-            <div className="modal-header">Adicionar Novo Atraso/Pagamento</div>
+          <div className="modal-container">
+            <div className="modal-header">Adicionar Novo Registro</div>
+
             <div className="modal-body">
-              <div className="modal-field">
-                <label>Nome do Aluno</label>
-                <input 
-                  value={newAtraso.aluno} 
-                  onChange={(e) => setNewAtraso(prev => ({ ...prev, aluno: e.target.value }))} 
-                  placeholder="Digite o nome do aluno"
-                />
-              </div>
-              <div className="modal-field">
-                <label>Livro</label>
-                <input 
-                  value={newAtraso.livro} 
-                  onChange={(e) => setNewAtraso(prev => ({ ...prev, livro: e.target.value }))} 
-                  placeholder="Digite o nome do livro"
-                />
-              </div>
-              <div className="modal-field">
-                <label>Multa</label>
-                <input 
-                  value={newAtraso.multa} 
-                  onChange={(e) => setNewAtraso(prev => ({ ...prev, multa: e.target.value }))} 
-                  placeholder="Digite o valor da multa (ex: R$ 5,00)"
-                />
-              </div>
-              <div className="modal-field">
-                <label>Data</label>
-                <input 
-                  type="date"
-                  value={newAtraso.data} 
-                  onChange={(e) => setNewAtraso(prev => ({ ...prev, data: e.target.value }))} 
-                />
-              </div>
+              {["aluno", "livro", "multa", "data"].map((f) => (
+                <div className="modal-field" key={f}>
+                  <label>{f.toUpperCase()}</label>
+                  <input
+                    type={f === "data" ? "date" : "text"}
+                    value={(newAtraso as any)[f]}
+                    onChange={(e) => setNewAtraso((prev) => ({ ...prev, [f]: e.target.value }))}
+                  />
+                </div>
+              ))}
             </div>
+
             <div className="modal-actions">
-              <button className="cancel-btn" onClick={handleAddCancel}>Cancelar</button>
+              <button className="cancel-btn" onClick={() => setShowAddModal(false)}>Cancelar</button>
               <button className="confirm-btn" onClick={handleAddConfirm}>Confirmar</button>
             </div>
           </div>
@@ -469,13 +327,13 @@ const AtrasosPage: React.FC = () => {
       {/* MODAL DELETE */}
       {showDeleteModal && (
         <div className="modal-overlay">
-          <div className="modal-container" role="dialog" aria-modal="true">
+          <div className="modal-container">
             <div className="modal-header">Confirmar exclusão</div>
             <div className="modal-body">
-              <p>Tem certeza que deseja deletar {selectedRows.length} registro(s)?</p>
+              <p>Deseja realmente excluir {selectedRows.length} registro(s)?</p>
             </div>
             <div className="modal-actions">
-              <button className="cancel-btn" onClick={handleDeleteCancel}>Cancelar</button>
+              <button className="cancel-btn" onClick={() => setShowDeleteModal(false)}>Cancelar</button>
               <button className="confirm-btn delete-confirm-btn" onClick={handleDeleteConfirm}>Confirmar</button>
             </div>
           </div>
