@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [ "feat/ci_cd_actions" ]
+  pull_request:
+    branches: [ "feat/ci_cd_actions" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test --if-present
+
+      - name: Build project
+        run: npm run build
