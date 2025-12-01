@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { Dashboard, Login, Acervo, Emprestimos, Atrasos, Relatorios, Perfil, Configuracao } from "../pages";
+import { Dashboard, Login, Acervo, Emprestimos, Atrasos, Relatorios, Perfil, Configuracao, Register } from "../pages";
 import ProtectedRoute from "../components/ProtectedRoute";
 import ProtectedLayout from "./ProtectedLayout";
 
@@ -11,6 +11,10 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />
+  },
+  {
+    path: "/register",
+    element: <Register />
   },
   {
     path: "/",
