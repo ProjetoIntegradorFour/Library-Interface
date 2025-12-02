@@ -1,8 +1,8 @@
 import "../styles/global.css";
 import LoanTablePage from "../components/MockedTables/LoanTablePage";
 import { useEffect, useState } from "react";
-//import { getEmprestimos } from "../service/api/emprestimosApi";
-//import type { Loan } from "../types/loan";
+import { getEmprestimos } from "../service/api/emprestimosApi";
+import type { Loan } from "../types/loan";
 import { useSearchParams } from "react-router-dom";
 
 interface URLState {
@@ -19,7 +19,7 @@ interface URLState {
 export default function Emprestimos() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
-  //const [loans, setLoans] = useState<Loan[]>([]);
+  const [loans, setLoans] = useState<Loan[]>([]);
   const [totalPages, setTotalPages] = useState(0);
 
   const urlState: URLState = {
@@ -32,7 +32,7 @@ export default function Emprestimos() {
     sort: searchParams.get('sort') || undefined,
     order: (searchParams.get('order') as 'asc' | 'desc') || undefined
   };
-/*
+
   useEffect(() => {
     const fetchEmprestimos = async () => {
       console.log("[Emprestimos] Buscando empréstimos com estado:", urlState);
@@ -53,7 +53,7 @@ export default function Emprestimos() {
 
     fetchEmprestimos();
   }, [urlState.page]);
-*/
+
   const handlePageChange = (newPage: number) => {
     updateURLState({ page: newPage });
   };
@@ -79,15 +79,14 @@ export default function Emprestimos() {
   return (
     <div className="archive-page">
       <LoanTablePage
-      /*loans={loans}
+      loans={loans}
       totalPages={totalPages}
       loading={loading}
       onPageChange={handlePageChange}
       onFilterChange={handleFilterChange}
       urlState={urlState}
       currentPage={urlState.page}
-      */
-      />
+    />
     </div>
   );
 }

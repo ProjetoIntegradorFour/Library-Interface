@@ -1,8 +1,34 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import GenericTable from "../Table/GenericTable";
+import { loanColumns, loanTableConfig } from "../Table/config/loanTableConfig";
 
 import plusIcon from "../../assets/img/plus.png";
 import trashIcon from "../../assets/img/trash.png";
 import editIcon from "../../assets/img/edit.png";
+import type { Loan } from "../../types/loan";
+
+interface LoanTablePageProps {
+  loans: Loan[];
+  loading: boolean;
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  urlState?: {
+    id?: string;
+    userName?: string;
+    bookName?: string;
+    status?: string;
+    dataLoan?: string;
+    sort?: string;
+    order?: 'asc' | 'desc';
+  };
+  onFilterChange?: (filters: any) => void;
+}
+
+const LoanTablePage: React.FC<LoanTablePageProps> = () => {
+  // This component is not used in this file. You may remove it or export only one component per file.
+  return null;
+};
 
 interface Emprestimo {
   id: number;
@@ -22,7 +48,7 @@ interface FilterState {
 
 // EmprestimosPage - refatorado (Opção B)
 // Mantém todas as funcionalidades originais (filtros, seleção, adição, edição inline, exclusão, localStorage)
-export default function EmprestimosPage(): JSX.Element {
+export default function EmprestimosPage() {
   // estados principais
   const [emprestimos, setEmprestimos] = useState<Emprestimo[]>([]);
   const [filteredEmprestimos, setFilteredEmprestimos] = useState<Emprestimo[]>([]);
@@ -32,11 +58,11 @@ export default function EmprestimosPage(): JSX.Element {
   const [showFilter, setShowFilter] = useState(false);
   const [filters, setFilters] = useState<FilterState>({ id: "", aluno: "", livro: "", status: "", data: "" });
 
-  // modais
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+// modais
+const [showAddModal, setShowAddModal] = useState(false);
+const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  // add / edit forms
+// add / edit forms
   const [newEmprestimo, setNewEmprestimo] = useState<Omit<Emprestimo, "id">>({ aluno: "", livro: "", status: "", data: "" });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editValues, setEditValues] = useState<Omit<Emprestimo, "id">>({ aluno: "", livro: "", status: "", data: "" });
@@ -132,10 +158,13 @@ export default function EmprestimosPage(): JSX.Element {
     setSelectedRows(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
   }, []);
 
-  const handleSelectAll = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) setSelectedRows(currentRows.map(r => r.id));
-    else setSelectedRows([]);
-  }, [currentRows]);
+  const handleSelectAll = useCallback((items: Loan[]) => {
+    if (selectedRows.length === items.length) {
+      setSelectedRows([]);
+    } else {
+      setSelectedRows(items.map(item => item.id));
+    }
+  }, [selectedRows.length]);
 
   /* ----------------------------------
      Adicionar
@@ -297,72 +326,25 @@ export default function EmprestimosPage(): JSX.Element {
       </div>
 
       {/* TABELA */}
-      <div className="table-wrapper">
-        <table className="custom-table">
-          <thead>
-            <tr>
-              <th>
-                <input type="checkbox" onChange={handleSelectAll} checked={selectedRows.length === currentRows.length && currentRows.length > 0} />
-              </th>
-              <th>ID</th>
-              <th>NOME DO ALUNO</th>
-              <th>LIVRO</th>
-              <th>STATUS</th>
-              <th>DATA</th>
-            </tr>
-          </thead>
+      <GenericTable
+        data={currentRows.map(item => ({
+          id: item.id,
+          userName: item.aluno,
+          bookName: item.livro,
+          status: item.status,
+          dataLoan: item.data,    
+        })) as Loan[]}
+        columns={loanColumns}
+        loading={false}
+        selectedRows={selectedRows}
+        onRowSelect={handleRowSelect}
+        onSelectAll={handleSelectAll}
+        config={loanTableConfig}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
 
-          <tbody>
-            {currentRows.map((emprestimo) => (
-              <tr key={emprestimo.id} className={selectedRows.includes(emprestimo.id) ? "selected" : ""}>
-                <td>
-                  <input type="checkbox" checked={selectedRows.includes(emprestimo.id)} onChange={() => handleRowSelect(emprestimo.id)} />
-                </td>
-
-                <td>{emprestimo.id}</td>
-
-                <td>
-                  {editingId === emprestimo.id ? (
-                    <input className="inline-edit" value={editValues.aluno} onChange={(e) => setEditValues(prev => ({ ...prev, aluno: e.target.value }))} />
-                  ) : (
-                    emprestimo.aluno
-                  )}
-                </td>
-
-                <td>
-                  {editingId === emprestimo.id ? (
-                    <input className="inline-edit" value={editValues.livro} onChange={(e) => setEditValues(prev => ({ ...prev, livro: e.target.value }))} />
-                  ) : (
-                    emprestimo.livro
-                  )}
-                </td>
-
-                <td>
-                  {editingId === emprestimo.id ? (
-                    <input className="inline-edit" value={editValues.status} onChange={(e) => setEditValues(prev => ({ ...prev, status: e.target.value }))} />
-                  ) : (
-                    <span className={`status-badge status-${emprestimo.status.toLowerCase()}`}>{emprestimo.status}</span>
-                  )}
-                </td>
-
-                <td>
-                  {editingId === emprestimo.id ? (
-                    <input type="date" className="inline-edit" value={editValues.data} onChange={(e) => setEditValues(prev => ({ ...prev, data: e.target.value }))} />
-                  ) : (
-                    emprestimo.data
-                  )}
-                </td>
-              </tr>
-            ))}
-
-            {currentRows.length === 0 && (
-              <tr>
-                <td colSpan={6} style={{ textAlign: "center", padding: "18px 0" }}>Nenhum registro</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
 
       {/* PAGINAÇÃO */}
       <div className="pagination">
@@ -429,4 +411,4 @@ export default function EmprestimosPage(): JSX.Element {
       )}
     </div>
   );
-}
+  }
