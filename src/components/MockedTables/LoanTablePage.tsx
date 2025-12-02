@@ -1,34 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import GenericTable from "../Table/GenericTable";
-import { loanColumns, loanTableConfig } from "../Table/config/loanTableConfig";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import plusIcon from "../../assets/img/plus.png";
 import trashIcon from "../../assets/img/trash.png";
 import editIcon from "../../assets/img/edit.png";
-import type { Loan } from "../../types/loan";
-
-interface LoanTablePageProps {
-  loans: Loan[];
-  loading: boolean;
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-  urlState?: {
-    id?: string;
-    userName?: string;
-    bookName?: string;
-    status?: string;
-    dataLoan?: string;
-    sort?: string;
-    order?: 'asc' | 'desc';
-  };
-  onFilterChange?: (filters: any) => void;
-}
-
-const LoanTablePage: React.FC<LoanTablePageProps> = () => {
-  // This component is not used in this file. You may remove it or export only one component per file.
-  return null;
-};
 
 interface Emprestimo {
   id: number;
