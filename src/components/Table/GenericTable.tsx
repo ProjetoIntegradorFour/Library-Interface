@@ -3,7 +3,9 @@ import Pagination from "./Pagination";
 import type { TableProps, PaginationProps } from "./types";
 
 interface GenericTableProps<T> extends TableProps<T>, PaginationProps {
-    // header actoins
+    editingId?: number | null;
+    editValues?: any;
+    onEditChange?: (values: any) => void;
 }
 
 const GenericTable = <T extends { id: number }>({
@@ -15,10 +17,16 @@ const GenericTable = <T extends { id: number }>({
     onRowSelect,
     onSelectAll,
     config = {},
+
     // Pagination props
     currentPage,
     totalPages,
-    onPageChange
+    onPageChange,
+
+    // Editing props
+    editingId,
+    editValues,
+    onEditChange
 }: GenericTableProps<T>) => {
     return (
         <div className="table-page-container">
@@ -32,6 +40,10 @@ const GenericTable = <T extends { id: number }>({
                 onRowSelect={onRowSelect}
                 onSelectAll={onSelectAll}
                 config={config}
+
+                editingId={editingId}
+                editValues={editValues}
+                onEditChange={onEditChange}
             />
 
             <Pagination

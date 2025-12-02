@@ -158,13 +158,13 @@ const [showDeleteModal, setShowDeleteModal] = useState(false);
     setSelectedRows(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
   }, []);
 
-  const handleSelectAll = useCallback((items: Loan[]) => {
-    if (selectedRows.length === items.length) {
+  const handleSelectAll = useCallback(() => {
+    if (selectedRows.length === currentRows.length) {
       setSelectedRows([]);
     } else {
-      setSelectedRows(items.map(item => item.id));
+      setSelectedRows(currentRows.map(item => item.id));
     }
-  }, [selectedRows.length]);
+  }, [selectedRows.length, currentRows]);
 
   /* ----------------------------------
      Adicionar
@@ -326,24 +326,72 @@ const [showDeleteModal, setShowDeleteModal] = useState(false);
       </div>
 
       {/* TABELA */}
-      <GenericTable
-        data={currentRows.map(item => ({
-          id: item.id,
-          userName: item.aluno,
-          bookName: item.livro,
-          status: item.status,
-          dataLoan: item.data,    
-        })) as Loan[]}
-        columns={loanColumns}
-        loading={false}
-        selectedRows={selectedRows}
-        onRowSelect={handleRowSelect}
-        onSelectAll={handleSelectAll}
-        config={loanTableConfig}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
+      <div className="table-wrapper">
+        <table className="custom-table">
+          <thead>
+            <tr>
+              <th>
+                <input type="checkbox" onChange={() => handleSelectAll()} checked={selectedRows.length === currentRows.length && currentRows.length > 0} />
+              </th>
+              <th>ID</th>
+              <th>NOME DO ALUNO</th>
+              <th>LIVRO</th>
+              <th>STATUS</th>
+              <th>DATA</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {currentRows.map((emprestimo) => (
+              <tr key={emprestimo.id} className={selectedRows.includes(emprestimo.id) ? "selected" : ""}>
+                <td>
+                  <input type="checkbox" checked={selectedRows.includes(emprestimo.id)} onChange={() => handleRowSelect(emprestimo.id)} />
+                </td>
+
+                <td>{emprestimo.id}</td>
+
+                <td>
+                  {editingId === emprestimo.id ? (
+                    <input className="inline-edit" value={editValues.aluno} onChange={(e) => setEditValues(prev => ({ ...prev, aluno: e.target.value }))} />
+                  ) : (
+                    emprestimo.aluno
+                  )}
+                </td>
+
+                <td>
+                  {editingId === emprestimo.id ? (
+                    <input className="inline-edit" value={editValues.livro} onChange={(e) => setEditValues(prev => ({ ...prev, livro: e.target.value }))} />
+                  ) : (
+                    emprestimo.livro
+                  )}
+                </td>
+
+                <td>
+                  {editingId === emprestimo.id ? (
+                    <input className="inline-edit" value={editValues.status} onChange={(e) => setEditValues(prev => ({ ...prev, status: e.target.value }))} />
+                  ) : (
+                    <span className={`status-badge status-${emprestimo.status.toLowerCase()}`}>{emprestimo.status}</span>
+                  )}
+                </td>
+
+                <td>
+                  {editingId === emprestimo.id ? (
+                    <input type="date" className="inline-edit" value={editValues.data} onChange={(e) => setEditValues(prev => ({ ...prev, data: e.target.value }))} />
+                  ) : (
+                    emprestimo.data
+                  )}
+                </td>
+              </tr>
+            ))}
+
+            {currentRows.length === 0 && (
+              <tr>
+                <td colSpan={6} style={{ textAlign: "center", padding: "18px 0" }}>Nenhum registro</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
 
       {/* PAGINAÇÃO */}

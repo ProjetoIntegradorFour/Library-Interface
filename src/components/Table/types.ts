@@ -21,6 +21,10 @@ export interface TableProps<T> {
     onRowSelect?: (id: number) => void;
     onSelectAll?: (items: T[]) => void;
     config?: TableConfig;
+
+    editingId?: number | null;
+    editValues?: any;
+    onEditChange?: (values: any) => void;
 }
 
 export interface PaginationProps {
