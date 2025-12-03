@@ -79,6 +79,12 @@ export default function Emprestimos() {
   return (
     <div className="archive-page">
       <LoanTablePage
+        loans={loans}
+        loading={loading}
+        currentPage={urlState.page}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        onFilterChange={handleFilterChange}
     />
     </div>
   );

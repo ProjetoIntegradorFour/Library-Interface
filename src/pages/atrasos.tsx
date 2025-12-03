@@ -1,8 +1,8 @@
 import "../styles/global.css";
 import PaymentTablePage from "../components/MockedTables/PaymentTablePage";
-import { use, useEffect, useState } from "react";
-//import { getAtrasos } from "../service/api/atrasosApi";
-//import type { Payment } from "../types/payment";
+import { useEffect, useState } from "react";
+import { getAtrasos } from "../service/api/atrasosApi";
+import type { Payment } from "../types/payment";
 import { useSearchParams } from "react-router-dom";
 
 interface URLState {
@@ -19,7 +19,7 @@ interface URLState {
 export default function Emprestimos() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
-  //const [payments, setPayments] = useState<Payment[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [totalPages, setTotalPages] = useState(0)
 
   const urlState: URLState = {
@@ -37,15 +37,15 @@ export default function Emprestimos() {
     const fetchAtrasos = async () => {
       console.log("[Atrasos] Buscando atrasos com estado:", urlState);
       try {
-        //const response = await getAtrasos({
-        //  page: urlState.page,
-        //});
-        //console.log("[Atrasos] Resposta paginada:", response);
-        //setPayments(response.content);
-        //setTotalPages(response.totalPages);
+        const response = await getAtrasos({
+          page: urlState.page,
+        });
+        console.log("[Atrasos] Resposta paginada:", response);
+        setPayments(response.content);
+        setTotalPages(response.totalPages);
       } catch (error) {
         console.error("[Atrasos] Erro ao carregar atrasos:", error);
-        //setPayments([]);
+        setPayments([]);
       } finally {
         setLoading(false);
       }
@@ -79,15 +79,6 @@ export default function Emprestimos() {
   return (
     <div className="archive-page">
       <PaymentTablePage
-      /* 
-      totalPages={totalPages}
-      loading={loading}
-      currentPage={urlState.page}
-      payments={payments}
-      onPageChange={handlePageChange}
-      onFilterChange={handleFilterChange}
-      urlState={urlState}
-      */
       />
     </div>
   );

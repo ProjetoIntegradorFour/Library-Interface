@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo, use } from "react";
 
 import plusIcon from "../../assets/img/plus.png";
 import trashIcon from "../../assets/img/trash.png";
 import editIcon from "../../assets/img/edit.png";
+import type { Payment } from "../../types/payment";
 
 interface Atraso {
   id: number;
@@ -20,6 +21,146 @@ interface FilterState {
   data: string;
 }
 
+interface AtrasosPageProps {
+    payments?: Payment[];
+    loading?: boolean;
+    currentPage?: number;
+    totalPages?: number;
+    onPageChange?: (page: number) => void;
+    onFilterChange?: (filters: Partial<FilterState>) => void;
+}
+
+export default function PaymentTablePage(props: AtrasosPageProps) {
+  const [atrasos, setAtrasos] = useState<Atraso[]>([]);
+  const [filteredAtrasos, setFilteredAtrasos] = useState<Atraso[]>([]);
+
+  useEffect(() => {
+    if (props.payments) {
+      const mapped = props.payments.map(payment => ({
+        id: payment.id,
+        aluno: payment.userName,
+        livro: payment.bookTitle,
+        multa: payment.fineAmount,
+        data: payment.dueDate,
+      }));
+      setAtrasos(mapped);
+      setFilteredAtrasos(mapped);
+    }
+  }, [props.payments]);
+
+  useEffect(() => {
+    if (typeof props.currentPage === 'number') {
+      setCurrentPage(props.currentPage);
+    }
+  }, [props.currentPage]);
+
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [showFilter, setShowFilter] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({ id: "", aluno: "", livro: "", multa: "", data: "" });
+
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({ id: "", aluno: "", livro: "", multa: "", data: "" });
+
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const [newAtraso, setNewAtraso] = useState<Omit<Atraso, "id">>({ aluno: "", livro: "", multa: "", data: "" });
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editValues, setEditValues] = useState<Omit<Atraso, "id">>({ aluno: "", livro: "", multa: "", data: "" });
+
+  // paginação
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const rowsPerPage = 14;
+
+  const filterRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("atrasos");
+      if (stored) {
+        const parsed: Atraso[] = JSON.parse(stored);
+        setAtrasos(parsed);
+        setFilteredAtrasos(parsed);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar atrasos do localStorage:", error);
+    }
+  
+    const exemploAtrasos: Atraso[] = [
+      { id: 1, aluno: "João Silva", livro: "Dom Casmurro", multa: "R$ 5,00", data: "2024-01-15" },
+      { id: 2, aluno: "Maria Santos", livro: "O Cortiço", multa: "R$ 10,00", data: "2024-01-10" },
+      { id: 3, aluno: "Pedro Oliveira", livro: "Memórias Póstumas", multa: "R$ 15,50", data: "2024-01-05" },
+      { id: 4, aluno: "Ana Costa", livro: "Iracema", multa: "R$ 7,00", data: "2024-01-20" },
+      { id: 5, aluno: "Carlos Lima", livro: "O Guarani", multa: "R$ 12,00", data: "2024-01-18" },
+    ];
+    setAtrasos(exemploAtrasos);
+    setFilteredAtrasos(exemploAtrasos);
+  }, []);
+
+  useEffect(() => { 
+    try {
+      localStorage.setItem("atrasos", JSON.stringify(atrasos));
+    } catch (error) {
+      console.error("Erro ao salvar atrasos no localStorage:", error);
+    }
+  }, [atrasos]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
+        setShowFilter(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }
+  , []);
+
+  useEffect(() => {
+    const applyFilters = () => {
+      let updated = [...atrasos];
+      if (filters.id) {
+        updated = updated.filter(a => a.id.toString().includes(filters.id));
+      }
+      if (filters.aluno) {
+        updated = updated.filter(a => a.aluno.toLowerCase().includes(filters.aluno.toLowerCase()));
+      }
+      if (filters.livro) {
+        updated = updated.filter(a => a.livro.toLowerCase().includes(filters.livro.toLowerCase()));
+      }
+      if (filters.multa) {
+        updated = updated.filter(a => a.multa.toLowerCase().includes(filters.multa.toLowerCase()));
+      }
+      if (filters.data) {
+        updated = updated.filter(a => a.data.includes(filters.data));
+      }
+      setFilteredAtrasos(updated);
+      setCurrentPage(1);
+    };
+
+    applyFilters();
+  }, [filters, atrasos]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredAtrasos.length / rowsPerPage));
+
+  const currentRows = useMemo(() => {
+    const indexOfLastRow = currentPage * rowsPerPage;
+    const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+    return filteredAtrasos.slice(indexOfFirstRow, indexOfLastRow);
+  }, [currentPage, filteredAtrasos]);
+
+  const handleRowSelect = useCallback(id: number) => {
+    setSelectedRows((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  }, []);
+  const handleSelectAll = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) setSelectedRows(currentRows.map((r) => r.id));
+    else setSelectedRows([]);
+  }, [currentRows]);
+
+  
 const DEFAULT_FILTERS: FilterState = {
   id: "",
   aluno: "",

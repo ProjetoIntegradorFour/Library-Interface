@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import plusIcon from "../../assets/img/plus.png";
 import trashIcon from "../../assets/img/trash.png";
 import editIcon from "../../assets/img/edit.png";
+import type { Loan } from "../../types/loan";
 
 interface Emprestimo {
   id: number;
@@ -20,12 +21,42 @@ interface FilterState {
   data: string;
 }
 
+interface LoanTablePageProps {
+  loans?: Loan[];
+  totalPages?: number;
+  loading?: boolean;
+  onPageChange?: (newPage: number) => void;
+  onFilterChange?: (filters: Partial<Record<string, any>>) => void;
+  currentPage?: number;
+}
+
 // EmprestimosPage - refatorado (Opção B)
 // Mantém todas as funcionalidades originais (filtros, seleção, adição, edição inline, exclusão, localStorage)
-export default function EmprestimosPage() {
+export default function LoanTablePage(props: LoanTablePageProps = {}) {
   // estados principais
   const [emprestimos, setEmprestimos] = useState<Emprestimo[]>([]);
   const [filteredEmprestimos, setFilteredEmprestimos] = useState<Emprestimo[]>([]);
+
+  // sincroniza quando props controladas são fornecidas
+  useEffect(() => {
+    if (props.loans) {
+      const mapped = props.loans.map(loan => ({
+        id: loan.id,
+        aluno: loan.userName,
+        livro: loan.bookName,
+        status: loan.status,
+        data: loan.dataLoan,
+      }));
+      setEmprestimos(mapped);
+      setFilteredEmprestimos(mapped);
+    }
+  }, [props.loans]);
+
+  useEffect(() => {
+    if (typeof props.currentPage === "number") {
+      setCurrentPage(props.currentPage);
+    }
+  }, [props.currentPage]);
 
   // seleção / UI
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
