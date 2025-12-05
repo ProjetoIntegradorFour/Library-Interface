@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState, useCallback, useMemo, use } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 
 import plusIcon from "../../assets/img/plus.png";
 import trashIcon from "../../assets/img/trash.png";
 import editIcon from "../../assets/img/edit.png";
-import type { Payment } from "../../types/payment";
 
 interface Atraso {
   id: number;
@@ -21,146 +20,6 @@ interface FilterState {
   data: string;
 }
 
-interface AtrasosPageProps {
-    payments?: Payment[];
-    loading?: boolean;
-    currentPage?: number;
-    totalPages?: number;
-    onPageChange?: (page: number) => void;
-    onFilterChange?: (filters: Partial<FilterState>) => void;
-}
-
-export default function PaymentTablePage(props: AtrasosPageProps) {
-  const [atrasos, setAtrasos] = useState<Atraso[]>([]);
-  const [filteredAtrasos, setFilteredAtrasos] = useState<Atraso[]>([]);
-
-  useEffect(() => {
-    if (props.payments) {
-      const mapped = props.payments.map(payment => ({
-        id: payment.id,
-        aluno: payment.userName,
-        livro: payment.bookTitle,
-        multa: payment.fineAmount,
-        data: payment.dueDate,
-      }));
-      setAtrasos(mapped);
-      setFilteredAtrasos(mapped);
-    }
-  }, [props.payments]);
-
-  useEffect(() => {
-    if (typeof props.currentPage === 'number') {
-      setCurrentPage(props.currentPage);
-    }
-  }, [props.currentPage]);
-
-  const [selectedRows, setSelectedRows] = useState<number[]>([]);
-  const [showFilter, setShowFilter] = useState(false);
-  const [filters, setFilters] = useState<FilterState>({ id: "", aluno: "", livro: "", multa: "", data: "" });
-
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showFilter, setShowFilter] = useState(false);
-  const [filters, setFilters] = useState<FilterState>({ id: "", aluno: "", livro: "", multa: "", data: "" });
-
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-  const [newAtraso, setNewAtraso] = useState<Omit<Atraso, "id">>({ aluno: "", livro: "", multa: "", data: "" });
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editValues, setEditValues] = useState<Omit<Atraso, "id">>({ aluno: "", livro: "", multa: "", data: "" });
-
-  // paginação
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const rowsPerPage = 14;
-
-  const filterRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("atrasos");
-      if (stored) {
-        const parsed: Atraso[] = JSON.parse(stored);
-        setAtrasos(parsed);
-        setFilteredAtrasos(parsed);
-      }
-    } catch (error) {
-      console.error("Erro ao carregar atrasos do localStorage:", error);
-    }
-  
-    const exemploAtrasos: Atraso[] = [
-      { id: 1, aluno: "João Silva", livro: "Dom Casmurro", multa: "R$ 5,00", data: "2024-01-15" },
-      { id: 2, aluno: "Maria Santos", livro: "O Cortiço", multa: "R$ 10,00", data: "2024-01-10" },
-      { id: 3, aluno: "Pedro Oliveira", livro: "Memórias Póstumas", multa: "R$ 15,50", data: "2024-01-05" },
-      { id: 4, aluno: "Ana Costa", livro: "Iracema", multa: "R$ 7,00", data: "2024-01-20" },
-      { id: 5, aluno: "Carlos Lima", livro: "O Guarani", multa: "R$ 12,00", data: "2024-01-18" },
-    ];
-    setAtrasos(exemploAtrasos);
-    setFilteredAtrasos(exemploAtrasos);
-  }, []);
-
-  useEffect(() => { 
-    try {
-      localStorage.setItem("atrasos", JSON.stringify(atrasos));
-    } catch (error) {
-      console.error("Erro ao salvar atrasos no localStorage:", error);
-    }
-  }, [atrasos]);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
-        setShowFilter(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }
-  , []);
-
-  useEffect(() => {
-    const applyFilters = () => {
-      let updated = [...atrasos];
-      if (filters.id) {
-        updated = updated.filter(a => a.id.toString().includes(filters.id));
-      }
-      if (filters.aluno) {
-        updated = updated.filter(a => a.aluno.toLowerCase().includes(filters.aluno.toLowerCase()));
-      }
-      if (filters.livro) {
-        updated = updated.filter(a => a.livro.toLowerCase().includes(filters.livro.toLowerCase()));
-      }
-      if (filters.multa) {
-        updated = updated.filter(a => a.multa.toLowerCase().includes(filters.multa.toLowerCase()));
-      }
-      if (filters.data) {
-        updated = updated.filter(a => a.data.includes(filters.data));
-      }
-      setFilteredAtrasos(updated);
-      setCurrentPage(1);
-    };
-
-    applyFilters();
-  }, [filters, atrasos]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredAtrasos.length / rowsPerPage));
-
-  const currentRows = useMemo(() => {
-    const indexOfLastRow = currentPage * rowsPerPage;
-    const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-    return filteredAtrasos.slice(indexOfFirstRow, indexOfLastRow);
-  }, [currentPage, filteredAtrasos]);
-
-  const handleRowSelect = useCallback(id: number) => {
-    setSelectedRows((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
-  }, []);
-  const handleSelectAll = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) setSelectedRows(currentRows.map((r) => r.id));
-    else setSelectedRows([]);
-  }, [currentRows]);
-
-  
 const DEFAULT_FILTERS: FilterState = {
   id: "",
   aluno: "",
@@ -169,7 +28,7 @@ const DEFAULT_FILTERS: FilterState = {
   data: "",
 };
 
-const AtrasosPage: React.FC = () => {
+export default function PaymentTablePage() {
   const [atrasos, setAtrasos] = useState<Atraso[]>([]);
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
@@ -193,48 +52,44 @@ const AtrasosPage: React.FC = () => {
     data: "",
   });
 
-  // paginação
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 14;
 
   const filterRef = useRef<HTMLDivElement | null>(null);
 
-  /** Carrega dados do localStorage */
+  // Carregar dados
   useEffect(() => {
     const stored = localStorage.getItem("atrasos");
-
     if (stored) {
       setAtrasos(JSON.parse(stored));
     } else {
-      const exemploAtrasos: Atraso[] = [
+      setAtrasos([
         { id: 1, aluno: "João Silva", livro: "Dom Casmurro", multa: "R$ 5,00", data: "2024-01-15" },
         { id: 2, aluno: "Maria Santos", livro: "O Cortiço", multa: "R$ 10,00", data: "2024-01-10" },
         { id: 3, aluno: "Pedro Oliveira", livro: "Memórias Póstumas", multa: "R$ 15,50", data: "2024-01-05" },
         { id: 4, aluno: "Ana Costa", livro: "Iracema", multa: "R$ 7,00", data: "2024-01-20" },
         { id: 5, aluno: "Carlos Lima", livro: "O Guarani", multa: "R$ 12,00", data: "2024-01-18" },
-      ];
-      setAtrasos(exemploAtrasos);
+      ]);
     }
   }, []);
 
-  /** Persistência */
+  // Salvar no localStorage
   useEffect(() => {
     localStorage.setItem("atrasos", JSON.stringify(atrasos));
   }, [atrasos]);
 
-  /** Fecha o filtro ao clicar fora */
+  // Fechar popup de filtro clicando fora
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handler = (e: MouseEvent) => {
       if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
         setShowFilter(false);
       }
     };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  /** Filtros aplicados com memoization */
+  // Filtro com useMemo
   const filteredAtrasos = useMemo(() => {
     return atrasos.filter((a) => {
       if (filters.id && !a.id.toString().includes(filters.id)) return false;
@@ -246,51 +101,51 @@ const AtrasosPage: React.FC = () => {
     });
   }, [atrasos, filters]);
 
-  /** Paginação */
+  // Paginação
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredAtrasos.slice(indexOfFirstRow, indexOfLastRow);
   const totalPages = Math.max(1, Math.ceil(filteredAtrasos.length / rowsPerPage));
 
-  /** Seleção de linhas */
-  const handleRowSelect = (id: number) => {
+  // Seleção de linhas
+  const handleRowSelect = (id: number) =>
     setSelectedRows((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
-  };
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) setSelectedRows(currentRows.map((r) => r.id));
     else setSelectedRows([]);
   };
 
-  /** Adicionar registro */
+  // Abrir modal de adicionar
+  const handleAddOpen = () => {
+    setNewAtraso({ aluno: "", livro: "", multa: "", data: "" });
+    setShowAddModal(true);
+  };
+
+  // Salvar novo atraso
   const handleAddConfirm = () => {
     const { aluno, livro, multa, data } = newAtraso;
-
     if (!aluno || !livro || !multa || !data) return alert("Preencha todos os campos!");
 
     const newId = atrasos.length ? Math.max(...atrasos.map((a) => a.id)) + 1 : 1;
 
-    const entry: Atraso = { id: newId, ...newAtraso };
-
-    setAtrasos((prev) => [...prev, entry]);
+    setAtrasos((prev) => [...prev, { id: newId, ...newAtraso }]);
     setShowAddModal(false);
-    setNewAtraso({ aluno: "", livro: "", multa: "", data: "" });
   };
 
-  /** Exclusão */
+  // Deletar selecionados
   const handleDeleteConfirm = () => {
     setAtrasos((prev) => prev.filter((a) => !selectedRows.includes(a.id)));
     setSelectedRows([]);
     setShowDeleteModal(false);
   };
 
-  /** Edição */
+  // Iniciar ou finalizar edição
   const handleEditToggle = () => {
     if (editingId === null) {
       if (selectedRows.length !== 1) return alert("Selecione exatamente uma linha.");
-
       const id = selectedRows[0];
       const atraso = atrasos.find((a) => a.id === id)!;
 
@@ -305,7 +160,6 @@ const AtrasosPage: React.FC = () => {
       );
 
       setEditingId(null);
-      setEditValues({ aluno: "", livro: "", multa: "", data: "" });
       setSelectedRows([]);
     }
   };
@@ -314,16 +168,18 @@ const AtrasosPage: React.FC = () => {
 
   return (
     <div className="table-page-container">
+      {/* HEADER */}
       <div className="table-header">
         <div className="header-buttons-container">
           <div className="table-controls">
+            {/* FILTRO */}
             <div className="filter-container" ref={filterRef}>
               <button
                 className={`filter-btn ${hasActiveFilters() ? "active" : ""}`}
                 onClick={() => setShowFilter(!showFilter)}
               >
                 Filter
-                {hasActiveFilters() && <span className="filter-indicator"></span>}
+                {hasActiveFilters() && <span className="filter-indicator" />}
               </button>
 
               {showFilter && (
@@ -339,14 +195,19 @@ const AtrasosPage: React.FC = () => {
                         <label>{key.toUpperCase()}</label>
                         <input
                           value={(filters as any)[key]}
-                          onChange={(e) => setFilters((prev) => ({ ...prev, [key]: e.target.value }))}
+                          onChange={(e) =>
+                            setFilters((prev) => ({ ...prev, [key]: e.target.value }))
+                          }
                         />
                       </div>
                     ))}
                   </div>
 
                   <div className="filter-actions">
-                    <button className="clear-filters-btn" onClick={() => setFilters(DEFAULT_FILTERS)}>
+                    <button
+                      className="clear-filters-btn"
+                      onClick={() => setFilters(DEFAULT_FILTERS)}
+                    >
                       Limpar Filtros
                     </button>
                   </div>
@@ -355,12 +216,16 @@ const AtrasosPage: React.FC = () => {
             </div>
           </div>
 
+          {/* BOTÕES */}
           <div className="table-buttons">
-            <button className="add-btn" onClick={() => setShowAddModal(true)}>
+            <button className="add-btn" onClick={handleAddOpen}>
               <img src={plusIcon} className="button-icon" />
             </button>
 
-            <button className="delete-btn" onClick={() => selectedRows.length && setShowDeleteModal(true)}>
+            <button
+              className="delete-btn"
+              onClick={() => selectedRows.length && setShowDeleteModal(true)}
+            >
               <img src={trashIcon} className="button-icon" />
             </button>
 
@@ -377,6 +242,7 @@ const AtrasosPage: React.FC = () => {
         </div>
       </div>
 
+      {/* TABELA */}
       <div className="table-wrapper">
         <table className="custom-table">
           <thead>
@@ -400,7 +266,11 @@ const AtrasosPage: React.FC = () => {
             {currentRows.map((row) => (
               <tr key={row.id} className={selectedRows.includes(row.id) ? "selected" : ""}>
                 <td>
-                  <input type="checkbox" checked={selectedRows.includes(row.id)} onChange={() => handleRowSelect(row.id)} />
+                  <input
+                    type="checkbox"
+                    checked={selectedRows.includes(row.id)}
+                    onChange={() => handleRowSelect(row.id)}
+                  />
                 </td>
 
                 <td>{row.id}</td>
@@ -411,7 +281,9 @@ const AtrasosPage: React.FC = () => {
                       <input
                         className="inline-edit"
                         value={(editValues as any)[field]}
-                        onChange={(e) => setEditValues((prev) => ({ ...prev, [field]: e.target.value }))}
+                        onChange={(e) =>
+                          setEditValues((prev) => ({ ...prev, [field]: e.target.value }))
+                        }
                       />
                     ) : (
                       (row as any)[field]
@@ -420,68 +292,18 @@ const AtrasosPage: React.FC = () => {
                 ))}
               </tr>
             ))}
-
-            {currentRows.length === 0 && (
-              <tr>
-                <td colSpan={6} style={{ textAlign: "center", padding: "15px 0" }}>
-                  Nenhum registro encontrado
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
 
+      {/* Paginação */}
       <div className="pagination">
+        <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}>◀</button>
+
         <span>Página {currentPage} de {totalPages}</span>
-        <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>Anterior</button>
-        <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Próxima</button>
+
+        <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}>▶</button>
       </div>
-
-      {/* MODAL ADD */}
-      {showAddModal && (
-        <div className="modal-overlay">
-          <div className="modal-container">
-            <div className="modal-header">Adicionar Novo Registro</div>
-
-            <div className="modal-body">
-              {["aluno", "livro", "multa", "data"].map((f) => (
-                <div className="modal-field" key={f}>
-                  <label>{f.toUpperCase()}</label>
-                  <input
-                    type={f === "data" ? "date" : "text"}
-                    value={(newAtraso as any)[f]}
-                    onChange={(e) => setNewAtraso((prev) => ({ ...prev, [f]: e.target.value }))}
-                  />
-                </div>
-              ))}
-            </div>
-
-            <div className="modal-actions">
-              <button className="cancel-btn" onClick={() => setShowAddModal(false)}>Cancelar</button>
-              <button className="confirm-btn" onClick={handleAddConfirm}>Confirmar</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL DELETE */}
-      {showDeleteModal && (
-        <div className="modal-overlay">
-          <div className="modal-container">
-            <div className="modal-header">Confirmar exclusão</div>
-            <div className="modal-body">
-              <p>Deseja realmente excluir {selectedRows.length} registro(s)?</p>
-            </div>
-            <div className="modal-actions">
-              <button className="cancel-btn" onClick={() => setShowDeleteModal(false)}>Cancelar</button>
-              <button className="confirm-btn delete-confirm-btn" onClick={handleDeleteConfirm}>Confirmar</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
-};
-
-export default AtrasosPage;
+}

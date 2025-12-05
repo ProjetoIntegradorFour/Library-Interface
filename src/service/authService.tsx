@@ -32,11 +32,36 @@ export const HasEnvBypass = (): boolean => {
 export const isAuthenticated = (): boolean => {
   if (HasEnvBypass()) {
     console.log("Bypass enabled - automatically authenticated");
+
+    if (!localStorage.getItem("token")) {
+      const fakeToken = generateBypassToken();
+      localStorage.setItem("token", fakeToken);
+      localStorage.setItem("userRole", "ADMIN");
+      console.log("Bypass token set:", fakeToken);      
+  }
+
     return true;
+
   }
 
   const token = getToken();
   const hasToken = !!token;
   console.log("Auth check - Token exists:", hasToken);
   return hasToken;
+  
+};
+
+
+const generateBypassToken = (): string => {
+  const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+
+  const payload = btoa(JSON.stringify({
+    sub: "bypass-user",
+    roles: ["ADMIN"],
+    exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24)
+  }));
+
+  const signature = btoa("bypass-signature");
+
+  return `${header}.${payload}.${signature}`;
 };
