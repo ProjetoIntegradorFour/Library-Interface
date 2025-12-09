@@ -1,6 +1,6 @@
 import { getToken, logout } from './authService';
 
-const API_BASE_URL = "http://localhost:8080/api";
+const API_BASE_URL = "http://localhost:8080";
 
 class ApiService {
     private async request(endpoint: string, options: RequestInit = {}) {
@@ -19,7 +19,8 @@ class ApiService {
         try {
             response = await fetch(`${API_BASE_URL}${endpoint}`, config);
         } catch (error: unknown) {
-            throw new Error("Network error: " + error.message);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Error("Network error: " + errorMessage);
         }
 
         if (response.status === 401 || response.status === 403) {

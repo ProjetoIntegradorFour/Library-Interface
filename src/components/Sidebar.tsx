@@ -21,6 +21,7 @@ export default function Sidebar() {
       {shouldShowRoute("/") && (
         <NavLink
           to="/"
+          end // ⭐ IMPORTANTE: Isso faz com que "/" só fique ativo na rota exata
           className={({ isActive }) => `menu-item ${isActive ? "active" : ""}`}
         >
           <img src={dashboardIcon} alt="Dashboard" className="icon" />
@@ -55,6 +56,16 @@ export default function Sidebar() {
         >
           <img src={atrasosIcon} alt="Atrasos/Pagamentos" className="icon" />
           Atrasos/Pagamentos
+        </NavLink>
+      )}
+
+      {shouldShowRoute("/relatorios") && (
+        <NavLink
+          to="/relatorios"
+          className={({ isActive }) => `menu-item ${isActive ? "active" : ""}`}
+        >
+          <img src={relatoriosIcon} alt="Relatórios" className="icon" />
+          Relatórios
         </NavLink>
       )}
 

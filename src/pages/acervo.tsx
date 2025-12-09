@@ -1,5 +1,5 @@
 import "../styles/global.css";
-import TablePage from "../components/MockedTables/TablePage";
+import TablePage from "../components/TablePage";
 import { useEffect, useState } from "react";
 import { getLivros } from "../service/api/acervoApi";
 import type { Book } from "../types/book";
@@ -23,10 +23,11 @@ export default function Acervo() {
   const [loading, setLoading] = useState(true);
   const [books, setBooks] = useState<Book[]>([]);
   const [totalPages, setTotalPages] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
-  // Parse ALL URL parameters
+  // Parse ALL URL parameters - ⭐ GARANTE que page seja não-negativo
   const urlState: URLState = {
-    page: parseInt(searchParams.get('page') || '0'),
+    page: Math.max(0, parseInt(searchParams.get('page') || '0')), // ⭐ Math.max para evitar negativo
     id: searchParams.get('id') || undefined,
     cdd: searchParams.get('cdd') || undefined,
     titulo: searchParams.get('titulo') || undefined,
@@ -37,22 +38,41 @@ export default function Acervo() {
 
   useEffect(() => {
     const fetchLivros = async () => {
-      console.log("[Acervo] Buscando livros com estado:", urlState);
+      console.log("🔄 [Acervo] Buscando livros...");
+      console.log("📖 Página solicitada:", urlState.page);
+      
+      setLoading(true);
+      setError(null);
+
       try {
-        // ✅ FIX: Pass as object instead of number
+        // ⭐ PASSE o tamanho da página explicitamente
         const response = await getLivros({
           page: urlState.page,
-          // size: 14, // Optional - your default is already 14
-          // Future: Add filters here when backend is ready
-          // autor: urlState.autor,
-          // titulo: urlState.titulo,
+          size: 14, // ⭐ IMPORTANTE: Mesmo valor do TablePage
         });
-        console.log("[Acervo] Resposta paginada:", response);
+        
+        console.log("✅ [Acervo] Dados recebidos:", {
+          livrosEncontrados: response.content.length,
+          paginaAPI: response.number,
+          totalPaginasAPI: response.totalPages,
+          primeiroLivro: response.content[0]
+        });
+
+        // ⭐ VALIDAÇÃO: Se a página for maior que o total, ajusta
+        if (urlState.page >= response.totalPages && response.totalPages > 0) {
+          console.log("⚠️ Página inválida, redirecionando para página 0");
+          updateURLState({ page: 0 });
+          return;
+        }
+
         setBooks(response.content);
-        setTotalPages(response.totalPages);
-      } catch (error) {
-        console.error("[Acervo] Erro ao carregar livros:", error);
+        setTotalPages(Math.max(1, response.totalPages)); // ⭐ Mínimo 1 página
+        
+      } catch (error: any) {
+        console.error("❌ [Acervo] Erro:", error);
+        setError("Erro ao carregar acervo: " + error.message);
         setBooks([]);
+        setTotalPages(0);
       } finally {
         setLoading(false);
       }
@@ -62,12 +82,15 @@ export default function Acervo() {
   }, [urlState.page]);
 
   const handlePageChange = (newPage: number) => {
-    updateURLState({ page: newPage });
+    // ⭐ GARANTE que newPage não seja negativo
+    const safePage = Math.max(0, newPage);
+    console.log("📖 [Acervo] Mudando para página:", safePage);
+    updateURLState({ page: safePage });
   };
 
   // FUTURE: Handle filter changes
   const handleFilterChange = (filters: Partial<URLState>) => {
-    updateURLState({ ...filters, page: 0 }); // Reset to page 0 when filters change
+    updateURLState({ ...filters, page: 0 });
   };
 
   // UNIVERSAL URL updater
@@ -85,17 +108,59 @@ export default function Acervo() {
     setSearchParams(newParams);
   };
 
+  // ⭐ DEBUG: Mostre o estado atual
+  console.log("🎯 [Acervo] Renderizando com:", {
+    booksCount: books.length,
+    loading: loading,
+    currentPage: urlState.page,
+    totalPages: totalPages,
+    error: error,
+    primeiroLivro: books[0]
+  });
+
   return (
     <div className="archive-page">
+      {/* ⭐ MENSAGEM DE ERRO */}
+      {error && (
+        <div style={{
+          background: '#fee',
+          border: '1px solid #fcc',
+          borderRadius: '4px',
+          padding: '1rem',
+          marginBottom: '1rem',
+          color: '#c00'
+        }}>
+          ⚠️ {error}
+        </div>
+      )}
+
+      {/* ⭐ LOADING STATE */}
+      {loading && (
+        <div style={{
+          padding: '2rem',
+          textAlign: 'center',
+          background: '#f5f5f5',
+          borderRadius: '4px',
+          marginBottom: '1rem'
+        }}>
+          Carregando acervo...
+        </div>
+      )}
+
+      {/* ⭐ TABLE PAGE */}
       <TablePage
         books={books}
         loading={loading}
-        currentPage={urlState.page}
+        currentPage={urlState.page} // ⭐ CORRETO: zero-based (0, 1, 2...)
         totalPages={totalPages}
         onPageChange={handlePageChange}
-        // FUTURE: Pass URL state down for filters
         urlState={urlState}
         onFilterChange={handleFilterChange}
+        showAddButton={false}
+        showDeleteButton={false}
+        showEditButton={false}
+        showFilterButton={false}
+        showSelectionCheckboxes={false}
       />
     </div>
   );

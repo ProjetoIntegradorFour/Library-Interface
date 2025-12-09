@@ -271,12 +271,8 @@
 .dashboard-right .custom-table th {
   background-color: var(--primary-green);
   color: var(--neutral-white);
-  padding: 10px 14px;
+  padding: 10px 2px;
   font-weight: 700;
-}
-
-.dashboard-right .custom-table td {
-  padding: 10px 14px;
 }
 
 .dashboard-right .custom-table tr:nth-child(even) {
@@ -389,18 +385,6 @@
   border-radius: var(--border-radius);
   overflow: hidden;
   box-shadow: var(--shadow-light);
-}
-
-.custom-table th {
-  background-color: #9AA6BF;
-  color: var(--neutral-white);
-  padding: 10px;
-  text-align: left;
-}
-
-.custom-table td {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
 }
 
 .custom-table tr:nth-child(even) {
@@ -530,34 +514,34 @@
 }
 
 .custom-table th {
-  position: sticky;
-  top: 0;
-  background-color: var(--primary-green);
-  color: var(--neutral-white);
-  z-index: 2;
-  padding: 12px 4px;
-  text-align: start;
-  font-weight: 600;
-  font-size: 14px;
-  border: none;
-}
-
-.custom-table th:first-child {
-  width: 50px;
-  text-align: center;
+    position: sticky;
+    top: 0;
+    background-color: var(--primary-green); 
+    color: var(--neutral-white);
+    z-index: 2;
+    padding: 15px 20px; 
+    text-align: center;
+    font-weight: 600;
+    font-size: 18px; 
+    border: none;
+    min-width: 300px; 
+    
+    width: 300px; 
+    max-width: 300px; 
+    box-sizing: border-box; 
 }
 
 .custom-table td {
-  padding: 10px 0px;
-  border-bottom: 1px solid var(--neutral-gray);
-  font-size: 15px;
-  text-align: start;
-  vertical-align: middle;
-}
-
-.custom-table td:first-child {
+  padding: 20px;
+  border-bottom: 1px solid var(--neutral-gray, #e0e0e0);
+  font-size: 16px;
   text-align: center;
-  width: 60px;
+  vertical-align: middle;
+  box-sizing: border-box;
+  color: #333;
+  line-height: 1.5;
+  height: 60px;
+  transition: background-color 0.2s;
 }
 
 .custom-table tr:nth-child(even) {
@@ -1055,7 +1039,8 @@
   .custom-table th,
   .custom-table td {
     padding: 10px 12px;
-    font-size: 13px;
+    font-size: 20px;
+    min-width: 300px;
   }
 
   .add-btn,

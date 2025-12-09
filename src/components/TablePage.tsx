@@ -5,17 +5,19 @@ import trashIcon from "../assets/img/trash.png";
 import editIcon from "../assets/img/edit.png";
 
 interface Book {
-  id: number;
-  cdd: string;
-  titulo: string;
-  autor: string;
+  isbn: string;           // ⭐ MANTENHA assim
+  title: string;          // ⭐ MANTENHA assim
+  author: string;         // ⭐ MANTENHA assim
+  cover?: string;         // ⭐ Adicione se a API envia
+  availableCopies?: number; // ⭐ Adicione se a API envia
 }
 
+// ⭐ ATUALIZE FilterState para refletir os campos reais
 interface FilterState {
-  id: string;
-  cdd: string;
-  titulo: string;
-  autor: string;
+  isbn: string;      // ⭐ Mude de 'id' para 'isbn'
+  title: string;     // ⭐ Mude de 'titulo' para 'title'
+  author: string;    // ⭐ Mude de 'autor' para 'author'
+  // Remova 'cdd' se não existe na API
 }
 
 interface TablePageProps {
@@ -26,6 +28,12 @@ interface TablePageProps {
   onPageChange: (page: number) => void;
   urlState: any;
   onFilterChange: (filters: any) => void;
+
+  showAddButton?: boolean;
+  showDeleteButton?: boolean;
+  showEditButton?: boolean;
+  showFilterButton?: boolean;
+  showSelectionCheckboxes?: boolean;
 }
 
 const TablePage: React.FC<TablePageProps> = ({
@@ -35,34 +43,60 @@ const TablePage: React.FC<TablePageProps> = ({
   totalPages,
   onPageChange,
   urlState,
-  onFilterChange
+  onFilterChange,
+
+  showAddButton = true,
+  showDeleteButton = true,
+  showEditButton = true,
+  showFilterButton = true,
+  showSelectionCheckboxes = true
 }) => {
 
+    console.log("🚀 [TablePage] Iniciando com:", {
+    booksRecebidos: books?.length || 0,
+    loading: loading,
+    currentPage: currentPage,
+    totalPages: totalPages,
+    urlState: urlState,
+    primeiroLivro: books?.[0],
+    filtrosIniciais: {
+      isbn: urlState.id || "",
+      title: urlState.titulo || "", 
+      author: urlState.autor || ""
+    }
+  });
+
   const [filteredBooks, setFilteredBooks] = useState<Book[]>(books);
-  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  
+  // ⭐ Mude para string[] porque isbn é string
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  
   const [showFilter, setShowFilter] = useState<boolean>(false);
 
+  // ⭐ ATUALIZE os campos do filtro
   const [filters, setFilters] = useState<FilterState>({
-    id: urlState.id || "",
-    cdd: urlState.cdd || "",
-    titulo: urlState.titulo || "",
-    autor: urlState.autor || ""
+    isbn: urlState.id || "",      // ⭐ Mude para isbn
+    title: urlState.titulo || "", // ⭐ Mude para title
+    author: urlState.autor || "", // ⭐ Mude para author
   });
 
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
-  const [newBook, setNewBook] = useState<Omit<Book, "id">>({
-    cdd: "",
-    titulo: "",
-    autor: ""
+  // ⭐ ATUALIZE newBook para os campos reais
+  const [newBook, setNewBook] = useState<Omit<Book, "isbn">>({
+    title: "",      // ⭐ Mude
+    author: "",     // ⭐ Mude
+    // cover e availableCopies são opcionais
   });
 
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editValues, setEditValues] = useState<Omit<Book, "id">>({
-    cdd: "",
-    titulo: "",
-    autor: ""
+  // ⭐ Mude para string | null
+  const [editingIsbn, setEditingIsbn] = useState<string | null>(null);
+  
+  // ⭐ ATUALIZE editValues
+  const [editValues, setEditValues] = useState<Omit<Book, "isbn">>({
+    title: "",      // ⭐ Mude
+    author: "",     // ⭐ Mude
   });
 
   const rowsPerPage = 14;
@@ -73,23 +107,38 @@ const TablePage: React.FC<TablePageProps> = ({
     setFilteredBooks(books);
   }, [books]);
 
-  // ➤ Aplicar filtros
+  // ➤ Aplicar filtros - ⭐ ATUALIZE para usar campos corretos
   useEffect(() => {
     let result = books.slice();
 
-    if (filters.id) result = result.filter(b => b.id.toString().includes(filters.id));
-    if (filters.cdd) result = result.filter(b => b.cdd.toLowerCase().includes(filters.cdd.toLowerCase()));
-    if (filters.titulo) result = result.filter(b => b.titulo.toLowerCase().includes(filters.titulo.toLowerCase()));
-    if (filters.autor) result = result.filter(b => b.autor.toLowerCase().includes(filters.autor.toLowerCase()));
+    if (filters.isbn) result = result.filter(b => 
+      b.isbn.toLowerCase().includes(filters.isbn.toLowerCase())
+    );
+    if (filters.title) result = result.filter(b => 
+      b.title.toLowerCase().includes(filters.title.toLowerCase())
+    );
+    if (filters.author) result = result.filter(b => 
+      b.author.toLowerCase().includes(filters.author.toLowerCase())
+    );
 
     setFilteredBooks(result);
     onFilterChange(filters);
   }, [filters, books]);
 
   // ➤ Paginação
-  const indexOfLastRow = currentPage * rowsPerPage;
-  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const indexOfFirstRow = currentPage * rowsPerPage; // 0 * 14 = 0
+  const indexOfLastRow = indexOfFirstRow + rowsPerPage; // 0 + 14 = 14
   const currentRows = filteredBooks.slice(indexOfFirstRow, indexOfLastRow);
+
+  console.log("🔢 [TablePage] Cálculo paginação:", {
+  currentPage: currentPage,
+  rowsPerPage: rowsPerPage,
+  indexOfFirstRow: indexOfFirstRow,
+  indexOfLastRow: indexOfLastRow,
+  filteredBooksCount: filteredBooks.length,
+  currentRowsCount: currentRows.length,
+  sliceResult: `slice(${indexOfFirstRow}, ${indexOfLastRow})`
+  });
 
   // ➤ Fechar popup ao clicar fora
   useEffect(() => {
@@ -102,28 +151,28 @@ const TablePage: React.FC<TablePageProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Seleção individual
-  const handleRowSelect = (id: number) => {
+  // Seleção individual - ⭐ ATUALIZE para usar isbn (string)
+  const handleRowSelect = (isbn: string) => {
     setSelectedRows(prev => 
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+      prev.includes(isbn) ? prev.filter(x => x !== isbn) : [...prev, isbn]
     );
   };
 
-  // Seleção total
+  // Seleção total - ⭐ ATUALIZE para usar isbn
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) setSelectedRows(currentRows.map(r => r.id));
+    if (e.target.checked) setSelectedRows(currentRows.map(r => r.isbn));
     else setSelectedRows([]);
   };
 
-  // ➤ Criar (Só visual no front)
+  // ➤ Criar (Só visual no front) - ⭐ ATUALIZE campos
   const handleAddOpen = () => {
-    setNewBook({ cdd: "", titulo: "", autor: "" });
+    setNewBook({ title: "", author: "" });
     setShowAddModal(true);
   };
 
   const handleAddConfirm = () => {
-    if (!newBook.cdd.trim() || !newBook.titulo.trim() || !newBook.autor.trim()) {
-      alert("Preencha CDD, Título e Autor.");
+    if (!newBook.title.trim() || !newBook.author.trim()) {
+      alert("Preencha Título e Autor.");
       return;
     }
 
@@ -150,37 +199,47 @@ const TablePage: React.FC<TablePageProps> = ({
 
   const handleDeleteCancel = () => setShowDeleteModal(false);
 
-  // ➤ Editar (somente no front)
+  // ➤ Editar (somente no front) - ⭐ ATUALIZE para usar isbn
   const handleEditToggle = () => {
-    if (editingId === null) {
+    if (editingIsbn === null) {
       if (selectedRows.length !== 1) {
         alert("Selecione exatamente uma linha para editar.");
         return;
       }
-      const id = selectedRows[0];
-      const book = filteredBooks.find(b => b.id === id)!;
-      setEditingId(id);
-      setEditValues({ cdd: book.cdd, titulo: book.titulo, autor: book.autor });
+      const isbn = selectedRows[0];
+      const book = filteredBooks.find(b => b.isbn === isbn)!;
+      setEditingIsbn(isbn);
+      setEditValues({ title: book.title, author: book.author });
     } else {
       alert("Esse front não salva edição na API. Apenas visual.");
-      setEditingId(null);
-      setEditValues({ cdd: "", titulo: "", autor: "" });
+      setEditingIsbn(null);
+      setEditValues({ title: "", author: "" });
       setSelectedRows([]);
     }
   };
 
   const handleEditCancel = () => {
-    setEditingId(null);
-    setEditValues({ cdd: "", titulo: "", autor: "" });
+    setEditingIsbn(null);
+    setEditValues({ title: "", author: "" });
     setSelectedRows([]);
   };
 
   const clearFilters = () => {
-    setFilters({ id: "", cdd: "", titulo: "", autor: "" });
+    setFilters({ isbn: "", title: "", author: "" });
   };
 
   const hasActiveFilters = () =>
-    filters.id || filters.cdd || filters.titulo || filters.autor;
+    filters.isbn || filters.title || filters.author;
+
+  // ⭐ ADICIONE ESTE DEBUG
+  console.log("🔍 TablePage DEBUG:", {
+    booksCount: books.length,
+    filteredCount: filteredBooks.length,
+    currentRowsCount: currentRows.length,
+    firstBook: books[0],
+    selectedRows,
+    filters
+  });
 
   return (
     <div className="table-page-container">
@@ -189,7 +248,8 @@ const TablePage: React.FC<TablePageProps> = ({
       <div className="table-header">
         <div className="header-buttons-container">
 
-          {/* Filtros */}
+          {/* Filtros - ⭐ ATUALIZE campos */}
+          {showFilterButton &&(
           <div className="table-controls">
             <div className="filter-container" ref={filterRef}>
               <button
@@ -208,35 +268,28 @@ const TablePage: React.FC<TablePageProps> = ({
                   </div>
 
                   <div className="filter-fields">
+                    {/* ⭐ ATUALIZE campos do filtro */}
                     <div className="filter-field">
-                      <label>ID</label>
+                      <label>ISBN</label>
                       <input
-                        value={filters.id}
-                        onChange={(e) => setFilters(prev => ({ ...prev, id: e.target.value }))}
-                        placeholder="Filtrar por ID"
-                      />
-                    </div>
-                    <div className="filter-field">
-                      <label>CDD / CDU</label>
-                      <input
-                        value={filters.cdd}
-                        onChange={(e) => setFilters(prev => ({ ...prev, cdd: e.target.value }))}
-                        placeholder="Filtrar por CDD"
+                        value={filters.isbn}
+                        onChange={(e) => setFilters(prev => ({ ...prev, isbn: e.target.value }))}
+                        placeholder="Filtrar por ISBN"
                       />
                     </div>
                     <div className="filter-field">
                       <label>Título</label>
                       <input
-                        value={filters.titulo}
-                        onChange={(e) => setFilters(prev => ({ ...prev, titulo: e.target.value }))}
+                        value={filters.title}
+                        onChange={(e) => setFilters(prev => ({ ...prev, title: e.target.value }))}
                         placeholder="Filtrar por título"
                       />
                     </div>
                     <div className="filter-field">
                       <label>Autor</label>
                       <input
-                        value={filters.autor}
-                        onChange={(e) => setFilters(prev => ({ ...prev, autor: e.target.value }))}
+                        value={filters.author}
+                        onChange={(e) => setFilters(prev => ({ ...prev, author: e.target.value }))}
                         placeholder="Filtrar por autor"
                       />
                     </div>
@@ -249,22 +302,29 @@ const TablePage: React.FC<TablePageProps> = ({
               )}
             </div>
           </div>
+          )}
 
           {/* Botões */}
           <div className="table-buttons">
+            { showAddButton && (
             <button className="add-btn" onClick={handleAddOpen}>
               <img src={plusIcon} alt="Adicionar" className="button-icon" />
             </button>
+            )}
 
+            { showDeleteButton && (
             <button className="delete-btn" onClick={handleDeleteOpen}>
               <img src={trashIcon} alt="Deletar" className="button-icon" />
             </button>
+            )}
 
+            { showEditButton && (
             <button className="edit-btn" onClick={handleEditToggle}>
               <img src={editIcon} alt="Editar" className="button-icon" />
             </button>
+            )}
 
-            {editingId !== null && (
+            {editingIsbn !== null && (
               <button className="cancel-edit-btn" onClick={handleEditCancel}>
                 Cancelar
               </button>
@@ -273,11 +333,12 @@ const TablePage: React.FC<TablePageProps> = ({
         </div>
       </div>
 
-      {/* Tabela */}
+      {/* Tabela - ⭐ ATUALIZE cabeçalhos e dados */}
       <div className="table-wrapper">
         <table className="custom-table">
           <thead>
             <tr>
+              {showSelectionCheckboxes && (
               <th>
                 <input
                   type="checkbox"
@@ -285,72 +346,67 @@ const TablePage: React.FC<TablePageProps> = ({
                   checked={selectedRows.length === currentRows.length && currentRows.length > 0}
                 />
               </th>
-              <th>ID</th>
-              <th>CDD / CDU</th>
+              )}
+              <th>ISBN</th> {/* ⭐ Mude de ID para ISBN */}
               <th>TÍTULO</th>
               <th>AUTOR</th>
+              {/* ⭐ Remova CDD se não existe */}
             </tr>
           </thead>
 
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} style={{ textAlign: "center" }}>
+                <td colSpan={4} style={{ textAlign: "center" }}> {/* ⭐ Ajuste colSpan */}
                   Carregando...
                 </td>
               </tr>
             ) : currentRows.length === 0 ? (
               <tr>
-                <td colSpan={5} style={{ textAlign: "center" }}>
+                <td colSpan={4} style={{ textAlign: "center" }}> {/* ⭐ Ajuste colSpan */}
                   Nenhum registro encontrado
                 </td>
               </tr>
             ) : (
               currentRows.map((book) => (
-                <tr key={book.id} className={selectedRows.includes(book.id) ? "selected" : ""}>
+                <tr 
+                  key={book.isbn} 
+                  className={selectedRows.includes(book.isbn) ? "selected" : ""}
+                >
+                  {showSelectionCheckboxes && (
                   <td>
                     <input
                       type="checkbox"
-                      checked={selectedRows.includes(book.id)}
-                      onChange={() => handleRowSelect(book.id)}
+                      checked={selectedRows.includes(book.isbn)}
+                      onChange={() => handleRowSelect(book.isbn)}
                     />
                   </td>
+                  )}
 
-                  <td>{book.id}</td>
+                  {/* ⭐ USE OS CAMPOS CORRETOS */}
+                  <td>{book.isbn}</td>
 
                   <td>
-                    {editingId === book.id ? (
+                    {editingIsbn === book.isbn ? (
                       <input
                         className="inline-edit"
-                        value={editValues.cdd}
-                        onChange={(e) => setEditValues(prev => ({ ...prev, cdd: e.target.value }))}
+                        value={editValues.title}
+                        onChange={(e) => setEditValues(prev => ({ ...prev, title: e.target.value }))}
                       />
                     ) : (
-                      book.cdd
+                      book.title
                     )}
                   </td>
 
                   <td>
-                    {editingId === book.id ? (
+                    {editingIsbn === book.isbn ? (
                       <input
                         className="inline-edit"
-                        value={editValues.titulo}
-                        onChange={(e) => setEditValues(prev => ({ ...prev, titulo: e.target.value }))}
+                        value={editValues.author}
+                        onChange={(e) => setEditValues(prev => ({ ...prev, author: e.target.value }))}
                       />
                     ) : (
-                      book.titulo
-                    )}
-                  </td>
-
-                  <td>
-                    {editingId === book.id ? (
-                      <input
-                        className="inline-edit"
-                        value={editValues.autor}
-                        onChange={(e) => setEditValues(prev => ({ ...prev, autor: e.target.value }))}
-                      />
-                    ) : (
-                      book.autor
+                      book.author
                     )}
                   </td>
                 </tr>
@@ -362,24 +418,32 @@ const TablePage: React.FC<TablePageProps> = ({
 
       {/* Paginação */}
       <div className="pagination">
-        <span>Página {currentPage} de {totalPages}</span>
+        {/* ⭐ CORREÇÃO: Mostre currentPage + 1 para o usuário */}
+        <span>Página {currentPage + 1} de {totalPages}</span>
 
+        {/* ⭐ CORREÇÃO: 0 em vez de 1 */}
         <button
-          disabled={currentPage === 1}
-          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 0}
+          onClick={() => {
+            console.log("⬅️ Indo para página:", currentPage - 1);
+            onPageChange(currentPage - 1);
+          }}
         >
           Anterior
         </button>
 
         <button
-          disabled={currentPage === totalPages}
-          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage >= totalPages - 1}
+          onClick={() => {
+            console.log("➡️ Indo para página:", currentPage + 1);
+            onPageChange(currentPage + 1);
+          }}
         >
           Próxima
         </button>
       </div>
 
-      {/* Modal Add */}
+      {/* Modal Add - ⭐ ATUALIZE campos */}
       {showAddModal && (
         <div className="modal-overlay">
           <div className="modal-container">
@@ -387,26 +451,18 @@ const TablePage: React.FC<TablePageProps> = ({
 
             <div className="modal-body">
               <div className="modal-field">
-                <label>CDD / CDU</label>
+                <label>Título</label> {/* ⭐ Mude */}
                 <input
-                  value={newBook.cdd}
-                  onChange={(e) => setNewBook(prev => ({ ...prev, cdd: e.target.value }))}
+                  value={newBook.title}
+                  onChange={(e) => setNewBook(prev => ({ ...prev, title: e.target.value }))}
                 />
               </div>
 
               <div className="modal-field">
-                <label>Título</label>
+                <label>Autor</label> {/* ⭐ Mude */}
                 <input
-                  value={newBook.titulo}
-                  onChange={(e) => setNewBook(prev => ({ ...prev, titulo: e.target.value }))}
-                />
-              </div>
-
-              <div className="modal-field">
-                <label>Autor</label>
-                <input
-                  value={newBook.autor}
-                  onChange={(e) => setNewBook(prev => ({ ...prev, autor: e.target.value }))}
+                  value={newBook.author}
+                  onChange={(e) => setNewBook(prev => ({ ...prev, author: e.target.value }))}
                 />
               </div>
             </div>

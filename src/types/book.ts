@@ -1,14 +1,18 @@
 export interface Book {
-  id: number;
-  cdd: string;
-  titulo: string;
-  autor: string;
+  isbn: string,
+  title: string,
+  author: string,
+  cover?: string,
+  availableCopies?: number;
 }
 
 export interface PaginatedResponse<T> {
   content: T[];
   totalPages: number;
   totalElements: number;
-  size: number;   // quantidade de itens por página
-  number: number; // número da página atual
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
 }
