@@ -134,19 +134,6 @@ export default function Acervo() {
         </div>
       )}
 
-      {/* ⭐ LOADING STATE */}
-      {loading && (
-        <div style={{
-          padding: '2rem',
-          textAlign: 'center',
-          background: '#f5f5f5',
-          borderRadius: '4px',
-          marginBottom: '1rem'
-        }}>
-          Carregando acervo...
-        </div>
-      )}
-
       {/* ⭐ TABLE PAGE */}
       <TablePage
         books={books}

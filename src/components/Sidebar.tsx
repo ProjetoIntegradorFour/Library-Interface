@@ -8,6 +8,7 @@ import atrasosIcon from "../assets/img/money.png";
 import relatoriosIcon from "../assets/img/document.png";
 import perfilIcon from "../assets/img/perfil.png";
 import configIcon from "../assets/img/configuracoes.png";
+import plusArchiveIcon from "../assets/img/plusArchive.png";
 
 export default function Sidebar() {
   const accessibleRoutes = getAccessibleRoutes();
@@ -64,7 +65,7 @@ export default function Sidebar() {
           to="/relatorios"
           className={({ isActive }) => `menu-item ${isActive ? "active" : ""}`}
         >
-          <img src={relatoriosIcon} alt="Relatórios" className="icon" />
+          <img src={plusArchiveIcon} alt="Relatórios" className="icon" />
           Relatórios
         </NavLink>
       )}

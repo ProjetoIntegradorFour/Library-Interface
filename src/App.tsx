@@ -5,10 +5,11 @@ import ProtectedLayout from './routes/ProtectedLayout'
 
 // Páginas
 import LoginPage from './pages/login';
-import DashboardPage from './pages/dashboard'; // ⭐ IMPORTE DASHBOARD
+import DashboardPage from './pages/dashboard';
 import AcervoPage from './pages/acervo';
 import EmprestimosPage from './pages/emprestimos';
 import AtrasosPage from './pages/atrasos';
+import RelatoriosPage from './pages/relatorios';
 import AcessoNegadoPage from './pages/acesso-negado';
 
 function App() {
@@ -56,6 +57,14 @@ function App() {
           <ProtectedRoute>
             <ProtectedLayout>
               <AcessoNegadoPage />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/relatorios" element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <RelatoriosPage />
             </ProtectedLayout>
           </ProtectedRoute>
         } />
