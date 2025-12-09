@@ -1,129 +1,188 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/global.css";
 
-export default function Register() {
+const Register = () => {
   const navigate = useNavigate();
 
-  const BYPASS_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0Iiwicm9sZXMiOlsiUk9MRV9VU0VSIl0sImlhdCI6MTc2MDQ4ODUzOCwiZXhwIjoxNzYwNTc0OTM4fQ.D3lsMpGlZ3VkDGHne-G0tV2-HRlauWmU87hmFC01v5U";
-  const BYPASS_ROLE = "ADMIN";
+  const [users, setUsers] = useState<any[]>([]);
+  const [selectedUser, setSelectedUser] = useState("");
+  const [loadingUsers, setLoadingUsers] = useState(true);
 
-  const handleSaveToken = () => {
-    localStorage.setItem("token", BYPASS_TOKEN);
-    localStorage.setItem("role", BYPASS_ROLE);
+  const [form, setForm] = useState({
+    username: "",
+    cpf: "",
+    password: "",
+    role: "ADMIN",
+  });
 
-    alert(`Token e role salvos com sucesso!\nToken: ${BYPASS_TOKEN}\nRole: ${BYPASS_ROLE}`);
+  // POPUP DE SUCESSO
+  const [showPopup, setShowPopup] = useState(false);
+
+  // =============== CPF ARRUMADO ===============
+  const handleCpf = (value: string) => {
+    let cpf = value.replace(/\D/g, ""); // só números
+
+    if (cpf.length > 11) cpf = cpf.slice(0, 11); // 11 dígitos máx
+
+    // Formatação automática
+    if (cpf.length > 9) {
+      cpf = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    } else if (cpf.length > 6) {
+      cpf = cpf.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3");
+    } else if (cpf.length > 3) {
+      cpf = cpf.replace(/(\d{3})(\d{1,3})/, "$1.$2");
+    }
+
+    setForm({ ...form, cpf });
+  };
+  // ============================================
+
+  // BUSCAR USUÁRIOS
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/api/auth/users");
+      const data = await res.json();
+      setUsers(data);
+    } catch (err) {
+      console.log("Erro ao buscar usuários:", err);
+    } finally {
+      setLoadingUsers(false);
+    }
   };
 
   useEffect(() => {
-    const savedToken = localStorage.getItem("token");
-    const savedRole = localStorage.getItem("role");
-
-    if (savedToken && savedRole) {
-      console.log("Token já salvo:", savedToken);
-      console.log("Role já salvo:", savedRole);
-    }
+    fetchUsers();
   }, []);
 
+  // CRIAR USUÁRIO
+  const registerUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("http://localhost:8080/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: form.username,
+          cpf: form.cpf,
+          password: form.password,
+          role: [form.role],
+        }),
+      });
+
+      if (!res.ok) {
+        console.log("Erro:", await res.text());
+        return;
+      }
+
+      await fetchUsers();
+
+      setShowPopup(true); // <-- popup aparece aqui
+
+    } catch (err) {
+      console.log("Erro:", err);
+    }
+  };
+
+  // LOGIN
+  const enterSystem = () => {
+    if (!selectedUser) return alert("Selecione um usuário");
+
+    localStorage.setItem("loggedUser", selectedUser);
+    navigate("/dashboard");
+  };
+
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Página de Bypass para Testes</h2>
+    <div className="register-container">
+      <div className="register-card">
+        <h2 className="register-title">Criar Usuário</h2>
 
-      <p style={styles.subtitle}>
-        Esta página é apenas para testes de desenvolvimento
-      </p>
+        <form onSubmit={registerUser} className="register-form">
+          <label className="register-label">Nome de Usuário</label>
+          <input
+            className="register-input"
+            name="username"
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
+            required
+          />
 
-      <div style={styles.card}>
-        <button
-          onClick={handleSaveToken}
-          style={styles.button}
-        >
-          Salvar Token e Role
-        </button>
+          <label className="register-label">CPF</label>
+          <input
+            className="register-input"
+            name="cpf"
+            placeholder="000.000.000-00"
+            value={form.cpf}
+            onChange={(e) => handleCpf(e.target.value)}
+            required
+          />
 
-        <div style={styles.buttonGroup}>
-          <button
-            onClick={() => navigate('/home')}
-            style={{ ...styles.button, ...styles.secondaryButton }}
+          <label className="register-label">Senha</label>
+          <input
+            className="register-input"
+            type="password"
+            name="password"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            required
+          />
+
+          <label className="register-label">Tipo de Usuário</label>
+          <select
+            className="register-input register-select"
+            name="role"
+            value={form.role}
+            onChange={(e) => setForm({ ...form, role: e.target.value })}
           >
-            Ir para Home
-          </button>
+            <option value="ADMIN">Admin</option>
+            <option value="USER">User</option>
+          </select>
 
-          <button
-            onClick={() => navigate('/dashboard')}
-            style={{ ...styles.button, ...styles.secondaryButton }}
-          >
-            Ir para Dashboard
+          <button type="submit" className="register-button">
+            Criar Usuário
           </button>
-        </div>
+        </form>
 
-        <div style={styles.info}>
-          <p><strong>Token:</strong> {BYPASS_TOKEN.substring(0, 30)}...</p>
-          <p><strong>Role:</strong> {BYPASS_ROLE}</p>
-          <p><strong>Status:</strong> {localStorage.getItem("auth_token") ? "Salvo" : "Não salvo"}</p>
-        </div>
+        <hr className="register-divider" />
+
+        <h3 className="register-title">Entrar</h3>
+
+        {loadingUsers ? (
+          <p>Carregando usuários...</p>
+        ) : (
+          <>
+            <select
+              className="register-input register-select"
+              value={selectedUser}
+              onChange={(e) => setSelectedUser(e.target.value)}
+            >
+              <option value="">Selecione um usuário</option>
+              {users.map((u) => (
+                <option key={u.id} value={u.username}>
+                  {u.username} — {u.role}
+                </option>
+              ))}
+            </select>
+
+            <button onClick={enterSystem} className="register-button">
+              Entrar
+            </button>
+          </>
+        )}
       </div>
+
+      {/* POPUP BONITO */}
+      {showPopup && (
+        <div className="popup-overlay">
+          <div className="popup-box">
+            <h3>Usuário criado com sucesso!</h3>
+            <button onClick={() => setShowPopup(false)}>OK</button>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
-
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '100vh',
-    padding: '20px',
-    fontFamily: 'Arial, sans-serif',
-    backgroundColor: '#f5f5f5'
-  },
-  title: {
-    color: '#333',
-    marginBottom: '10px',
-    textAlign: 'center' as const
-  },
-  subtitle: {
-    color: '#666',
-    fontSize: '14px',
-    marginBottom: '30px',
-    textAlign: 'center' as const
-  },
-  card: {
-    backgroundColor: 'white',
-    borderRadius: '8px',
-    padding: '30px',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-    width: '100%',
-    maxWidth: '500px'
-  },
-  button: {
-    backgroundColor: '#2196F3',
-    color: 'white',
-    padding: '12px 24px',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    width: '100%',
-    fontSize: '16px',
-    marginBottom: '15px',
-    fontWeight: 'bold' as const
-  },
-  secondaryButton: {
-    backgroundColor: '#4CAF50',
-    marginBottom: '10px'
-  },
-  buttonGroup: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '10px',
-    marginTop: '20px'
-  },
-  info: {
-    marginTop: '25px',
-    padding: '15px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '4px',
-    fontSize: '14px',
-    color: '#333'
-  }
 };
+
+export default Register;
