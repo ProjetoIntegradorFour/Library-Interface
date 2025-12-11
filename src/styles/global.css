@@ -47,26 +47,23 @@
 .loan-page,
 .profile-page {
   margin-left: var(--sidebar-width);
-  padding: 10px;
   display: block;
 }
 
 .dashboard-page {
-  margin-top: -20px;
+  margin-top: -70px;
   margin-left: var(--sidebar-width);
-  padding: 0px 40px 40px;
+  padding: 0px 20px 0px;
   display: grid;
   grid-template-columns: 320px 1fr;
-  gap: 28px;
   align-items: start;
-  min-height: calc(100vh - 120px);
+  min-height: 900px;
 }
 
 .archive-page {
-  margin-top: -50px;
-  margin-left: 380px;
-  padding: 0px 40px 40px;
-  min-height: calc(100vh - 120px);
+  margin-top: -60px;
+  margin-left: var(--sidebar-width);
+  min-height: calc(100vh - 300px);
 }
 
 /* ===== COMPONENTE HEADER ===== */
@@ -161,7 +158,7 @@
 .menu-bottom {
   display: flex;
   gap: 8px;
-  margin-top: 490px;
+  margin-top: 590px;
 }
 
 .mini-item {
@@ -194,18 +191,19 @@
 /* ===== COMPONENTES DO DASHBOARD ===== */
 /* Coluna Esquerda - Cards */
 .dashboard-left {
+  margin-top: 30px;
   display: flex;
   flex-direction: column;
-  gap: 45px;
+  gap: 30px;
   align-items: flex-start;
-  padding-left: 6px;
 }
 
 .dashboard-left .card-title {
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   font-weight: 700;
-  margin: 0 0 8px;
+  margin-bottom: 10px;
   color: var(--neutral-dark);
+  letter-spacing: 0.3px;
 }
 
 .dashboard-left .card-container,
@@ -214,16 +212,38 @@
   max-width: 100%;
 }
 
+/* Card mais moderno */
 .dashboard-left .card {
   height: var(--card-height);
-  border-radius: 10px;
-  padding: 8px;
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: var(--neutral-light, #fff);
+
+  /* Sombra suave e elegante */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Efeito hover profissional */
+.dashboard-left .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* Ajuste da imagem */
 .dashboard-left .card-image img {
-  max-width: 70%;
-  max-height: 70%;
+  width: 70%;
+  height: auto;
+  max-height: 65%;
   object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  opacity: 0.95;
+  transition: opacity 0.2s ease;
+}
+
+.dashboard-left .card-image img:hover {
+  opacity: 1;
 }
 
 /* Coluna Direita - Tabela e Gráfico */
@@ -236,8 +256,15 @@
 
 .dashboard-right .custom-table-container {
   width: 100%;
-  max-width: 1025px;
-  margin: 0px 0 0 40px;
+  max-width: 1500px;
+  margin: 0px 0 0 30px;
+  align-self: start;
+}
+
+.dashboard-right .custom-table {
+  width: 100%;
+  max-width: 1500px;
+  max-height: 250px;
   align-self: start;
 }
 
@@ -262,25 +289,25 @@
 
 /* Gráfico */
 .dashboard-right .line-chart-wrapper {
-  margin-top: 10px;
+  margin-top: 20px;
   background-color: var(--pale-green);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 6px;
+  padding: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  max-width: 1030px;
-  margin-left: 40px;
-  min-height: 350px;
+  max-width: 1500px;
+  margin-left: 30px;
+  min-height: 628px;
 }
 
 .dashboard-right .line-chart-container {
-  width: 100%;
-  height: 500px;
+  width: 1080px;
+  height: 550px;
   background: var(--neutral-white);
   border-radius: 6px;
-  padding: 16px;
+  padding: 10px;
   box-shadow: var(--shadow-light);
 }
 
@@ -318,8 +345,8 @@
 
 .card {
   display: flex;
-  width: 24rem;
-  height: 10rem;
+  width: 55rem;
+  height: 20rem;
   background-color: var(--neutral-white);
   border: var(--primary-purple) 3px solid;
   border-radius: var(--border-radius);
@@ -342,8 +369,8 @@
 }
 
 .card-content {
-  width: 66.666%;
-  padding: 1rem;
+  width: 65%;
+  padding: 0.1rem;
   flex-direction: column;
   justify-content: space-between;
   color: black;
@@ -356,6 +383,7 @@
 
 .custom-table {
   width: 100%;
+  height: 700px;
   border-collapse: collapse;
   background-color: var(--neutral-light);
   border-radius: var(--border-radius);
@@ -384,10 +412,11 @@
   transition: 0.3s;
 }
 
-/* Container Principal da Tabela */
 .table-page-container {
-  max-width: 1400px;
-  margin: 20px auto;
+  width: 100%;                
+  max-width: 1400px;           
+  min-height: 400px;           
+  margin: 20px auto;           
   padding: 20px;
   background-color: #dbe4f0;
   border-radius: 15px;
@@ -447,6 +476,7 @@
 .delete-btn:hover,
 .edit-btn:hover {
   background-color: #dddddd;
+  box-shadow: 0 6px 14px var(--dark-green);
 }
 
 .cancel-edit-btn {
@@ -675,7 +705,7 @@
 
 .filter-field label {
   font-weight: 600;
-  color: var(--light-green);
+  color: var(--neutral-dark);
   font-size: 0.9rem;
   margin-bottom: 4px;
 }
@@ -809,6 +839,14 @@
   background-color: var(--dark-green);
   color: var(--neutral-white);
   border-color: var(--dark-green);
+}
+
+.pagination button:hover{
+  background-color: var(--dark-green);
+  color: var(--neutral-white);
+  border-color: var(--dark-green);
+    box-shadow: 0 6px 14px var(--dark-green);
+
 }
 
 .pagination button:disabled {
@@ -963,7 +1001,6 @@
     margin-left: 0;
     padding-left: 20px;
     grid-template-columns: 1fr;
-    padding-top: 140px;
   }
 
   .dashboard-left,
@@ -1468,4 +1505,17 @@
 
 .popup-box {
   cursor: default;
+@media (max-width: 1024px) {
+  .table-page-container {
+    padding: 16px;
+    max-width: 95%;
+  }
+}
+
+@media (max-width: 600px) {
+  .table-page-container {
+    padding: 12px;
+    border-radius: 10px;
+    max-width: 100%;
+  }
 }
