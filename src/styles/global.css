@@ -1518,3 +1518,26 @@
     max-width: 100%;
   }
 }
+
+/* ===============================
+   PAGE: COPIA
+   =============================== */
+
+.copia-page .table-page-container {
+  background-color: #dbe4f0;
+}
+
+/* Ajuste fino do botão Filter só da cópia */
+.copia-page .filter-btn {
+  min-width: 140px;
+}
+
+/* Espaçamento dos botões */
+.copia-page .table-buttons button {
+  box-shadow: none;
+}
+
+/* Ajuste visual da paginação */
+.copia-page .pagination {
+  justify-content: flex-end;
+}
