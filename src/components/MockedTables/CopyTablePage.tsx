@@ -318,7 +318,7 @@ export default function CopiaTablePage(): JSX.Element {
           <tbody>
             {currentRows.length === 0 ? (
               <tr>
-                <td colSpan={6} style={{ textAlign: "center", padding: "40px 0", color: "#666", fontSize: "16px" }}>
+                <td colSpan={6} style={{ textAlign: "center", padding: "18px 0"}}>
                   Nenhuma cópia cadastrada
                 </td>
               </tr>
