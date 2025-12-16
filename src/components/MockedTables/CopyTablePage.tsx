@@ -408,7 +408,9 @@ export default function CopiaTablePage(): JSX.Element {
                 >
                   <option value="">Selecione o status</option>
                   <option value="Ativo">Ativo</option>
+                  <option value="Ativo">Devolvido</option>
                   <option value="Atrasado">Atrasado</option>
+                  <option value="Atrasado">Renovado</option>
                 </select>
               </div>
 
