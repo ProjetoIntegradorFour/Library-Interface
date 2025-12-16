@@ -20,6 +20,11 @@ export default function Sidebar({ onOpenPerfil }: SidebarProps) {
     return accessibleRoutes.includes(path);
   };
 
+  // 🔒 Rotas bloqueadas temporariamente
+  const blockedRoutes = ["/emprestimos", "/atrasos"];
+
+  const isBlocked = (path: string) => blockedRoutes.includes(path);
+
   return (
     <aside className="sidebar">
       {shouldShowRoute("/") && (
@@ -52,32 +57,25 @@ export default function Sidebar({ onOpenPerfil }: SidebarProps) {
         </NavLink>
       )}
 
+      {/* 🔒 EMPRÉSTIMOS (bloqueado) */}
       {shouldShowRoute("/emprestimos") && (
-        <NavLink
-          to="/emprestimos"
-          className={({ isActive }) => `menu-item ${isActive ? "active" : ""}`}
-        >
+        <div className={`menu-item disabled`}>
           <img src={emprestimosIcon} alt="Empréstimos" className="icon" />
           Empréstimos
-        </NavLink>
+        </div>
       )}
 
+      {/* 🔒 ATRASOS / PAGAMENTOS (bloqueado) */}
       {shouldShowRoute("/atrasos") && (
-        <NavLink
-          to="/atrasos"
-          className={({ isActive }) => `menu-item ${isActive ? "active" : ""}`}
-        >
+        <div className={`menu-item disabled`}>
           <img src={atrasosIcon} alt="Atrasos/Pagamentos" className="icon" />
           Atrasos/Pagamentos
-        </NavLink>
+        </div>
       )}
 
       <div className="menu-bottom">
         {shouldShowRoute("/perfil") && (
-          <div
-            className="mini-item"
-            onClick={onOpenPerfil}
-          >
+          <div className="mini-item" onClick={onOpenPerfil}>
             <img src={perfilIcon} alt="Perfil" className="mini-icon" />
           </div>
         )}
