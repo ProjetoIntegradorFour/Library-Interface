@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 
-import plusIcon from "../../assets/img/plus.png";
-import trashIcon from "../../assets/img/trash.png";
 import editIcon from "../../assets/img/edit.png";
 
 interface Atraso {
@@ -215,13 +213,6 @@ const AtrasosPage: React.FC = () => {
           </div>
 
           <div className="table-buttons">
-            <button className="add-btn" onClick={() => setShowAddModal(true)}>
-              <img src={plusIcon} className="button-icon" />
-            </button>
-
-            <button className="delete-btn" onClick={() => selectedRows.length && setShowDeleteModal(true)}>
-              <img src={trashIcon} className="button-icon" />
-            </button>
 
             <button className="edit-btn" onClick={handleEditToggle}>
               <img src={editIcon} className="button-icon" />

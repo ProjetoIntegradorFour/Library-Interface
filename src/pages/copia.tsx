@@ -4,11 +4,10 @@ import { useSearchParams } from "react-router-dom";
 
 interface URLState {
   page: number;
-  id?: string;
-  aluno?: string;
+  ISBN?: string;
   livro?: string;
   status?: string;
-  data?: string;
+  aluno?: string;
   sort?: string;
   order?: "asc" | "desc";
 }
@@ -18,11 +17,10 @@ export default function Copia() {
 
   const urlState: URLState = {
     page: parseInt(searchParams.get("page") || "0"),
-    id: searchParams.get("id") || undefined,
-    aluno: searchParams.get("aluno") || undefined,
+    ISBN: searchParams.get("ISBN") || undefined,
     livro: searchParams.get("livro") || undefined,
     status: searchParams.get("status") || undefined,
-    data: searchParams.get("data") || undefined,
+    aluno: searchParams.get("aluno") || undefined,
     sort: searchParams.get("sort") || undefined,
     order: (searchParams.get("order") as "asc" | "desc") || undefined,
   };
@@ -30,7 +28,6 @@ export default function Copia() {
   return (
     <div className="archive-page">
       <CopyTablePage
-        /* depois você liga paginação, filtros etc */
       />
     </div>
   );

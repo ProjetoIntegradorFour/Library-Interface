@@ -5,39 +5,37 @@ import trashIcon from "../../assets/img/trash.png";
 import editIcon from "../../assets/img/edit.png";
 
 interface Copia {
-  id: number;
-  aluno: string;
+  ISBN: number;
   livro: string;
   status: string;
-  data: string; // YYYY-MM-DD
+  aluno: string;
 }
 
 interface FilterState {
-  id: string;
-  aluno: string;
+  ISBN: string;
   livro: string;
   status: string;
-  data: string;
+  aluno: string;
 }
 
 export default function CopiaTablePage(): JSX.Element {
   // estados principais
-  const [copias, setCopias] = useState<Copia[]>([]);
-  const [filteredCopias, setFilteredCopias] = useState<Copia[]>([]);
+  const [copia, setcopia] = useState<Copia[]>([]);
+  const [filteredcopia, setFilteredcopia] = useState<Copia[]>([]);
 
   // seleção / UI
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [showFilter, setShowFilter] = useState(false);
-  const [filters, setFilters] = useState<FilterState>({ id: "", aluno: "", livro: "", status: "", data: "" });
+  const [filters, setFilters] = useState<FilterState>({ ISBN: "", livro: "", status: "", aluno: ""});
 
   // modais
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // add / edit forms
-  const [newCopia, setNewCopia] = useState<Omit<Copia, "id">>({ aluno: "", livro: "", status: "", data: "" });
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editValues, setEditValues] = useState<Omit<Copia, "id">>({ aluno: "", livro: "", status: "", data: "" });
+  const [newCopia, setNewCopia] = useState<Omit<Copia, "ISBN">>({ livro: "", status: "", aluno: "" });
+  const [editingISBN, setEditingISBN] = useState<number | null>(null);
+  const [editValues, setEditValues] = useState<Omit<Copia, "ISBN">>({ livro: "", status: "", aluno: "" });
 
   // paginação
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -51,11 +49,11 @@ export default function CopiaTablePage(): JSX.Element {
      ------------------------------- */
   useEffect(() => {
     try {
-      const stored = localStorage.getItem("copias");
+      const stored = localStorage.getItem("copia");
       if (stored) {
         const parsed: Copia[] = JSON.parse(stored);
-        setCopias(parsed);
-        setFilteredCopias(parsed);
+        setcopia(parsed);
+        setFilteredcopia(parsed);
         return;
       }
     } catch (err) {
@@ -63,17 +61,17 @@ export default function CopiaTablePage(): JSX.Element {
     }
 
     // Iniciar com array vazio
-    setCopias([]);
-    setFilteredCopias([]);
+    setcopia([]);
+    setFilteredcopia([]);
   }, []);
 
   useEffect(() => {
     try {
-      localStorage.setItem("copias", JSON.stringify(copias));
+      localStorage.setItem("copia", JSON.stringify(copia));
     } catch (err) {
       console.warn("Erro ao salvar localStorage", err);
     }
-  }, [copias]);
+  }, [copia]);
 
   /* ----------------------------------
      Fechar filtro ao clicar fora
@@ -93,39 +91,38 @@ export default function CopiaTablePage(): JSX.Element {
      ---------------------------------- */
   useEffect(() => {
     const apply = () => {
-      let result = copias.slice();
-      if (filters.id) result = result.filter(r => r.id.toString().includes(filters.id));
-      if (filters.aluno) result = result.filter(r => r.aluno.toLowerCase().includes(filters.aluno.toLowerCase()));
+      let result = copia.slice();
+      if (filters.ISBN) result = result.filter(r => r.ISBN.toString().includes(filters.ISBN));
       if (filters.livro) result = result.filter(r => r.livro.toLowerCase().includes(filters.livro.toLowerCase()));
       if (filters.status) result = result.filter(r => r.status.toLowerCase().includes(filters.status.toLowerCase()));
-      if (filters.data) result = result.filter(r => r.data.includes(filters.data));
+      if (filters.aluno) result = result.filter(r => r.aluno.toLowerCase().includes(filters.aluno.toLowerCase()));
 
-      setFilteredCopias(result);
+      setFilteredcopia(result);
       setCurrentPage(1);
     };
 
     apply();
-  }, [copias, filters]);
+  }, [copia, filters]);
 
   /* ----------------------------------
      Paginação (memos)
      ---------------------------------- */
-  const totalPages = useMemo(() => Math.max(1, Math.ceil(filteredCopias.length / rowsPerPage)), [filteredCopias]);
+  const totalPages = useMemo(() => Math.max(1, Math.ceil(filteredcopia.length / rowsPerPage)), [filteredcopia]);
 
   const currentRows = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
-    return filteredCopias.slice(start, start + rowsPerPage);
-  }, [currentPage, filteredCopias]);
+    return filteredcopia.slice(start, start + rowsPerPage);
+  }, [currentPage, filteredcopia]);
 
   /* ----------------------------------
      Seleção de linhas
      ---------------------------------- */
-  const handleRowSelect = useCallback((id: number) => {
-    setSelectedRows(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
+  const handleRowSelect = useCallback((ISBN: number) => {
+    setSelectedRows(prev => (prev.includes(ISBN) ? prev.filter(x => x !== ISBN) : [...prev, ISBN]));
   }, []);
 
   const handleSelectAll = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) setSelectedRows(currentRows.map(r => r.id));
+    if (e.target.checked) setSelectedRows(currentRows.map(r => r.ISBN));
     else setSelectedRows([]);
   }, [currentRows]);
 
@@ -133,25 +130,25 @@ export default function CopiaTablePage(): JSX.Element {
      Adicionar
      ---------------------------------- */
   const handleAddOpen = () => {
-    setNewCopia({ aluno: "", livro: "", status: "", data: "" });
+    setNewCopia({ livro: "", status: "", aluno: "" });
     setShowAddModal(true);
   };
 
   const handleAddConfirm = () => {
-    if (!newCopia.aluno.trim() || !newCopia.livro.trim() || !newCopia.status.trim() || !newCopia.data.trim()) {
-      alert("Preencha todos os campos: Aluno, Livro, Status e Data.");
+    if ( !newCopia.livro.trim() || !newCopia.status.trim() || !newCopia.aluno.trim() ) {
+      alert("Preencha todos os campos: Livro, Status e Aluno.");
       return;
     }
 
-    const newId = copias.length > 0 ? Math.max(...copias.map(e => e.id)) + 1 : 1;
-    const entry: Copia = { id: newId, aluno: newCopia.aluno.trim(), livro: newCopia.livro.trim(), status: newCopia.status.trim(), data: newCopia.data.trim() };
-    setCopias(prev => [...prev, entry]);
+    const newISBN = copia.length > 0 ? Math.max(...copia.map(e => e.ISBN)) + 1 : 1;
+    const entry: Copia = { ISBN: newISBN, livro: newCopia.livro.trim(), status: newCopia.status.trim(), aluno: newCopia.aluno.trim() };
+    setcopia(prev => [...prev, entry]);
     setShowAddModal(false);
   };
 
   const handleAddCancel = () => {
     setShowAddModal(false);
-    setNewCopia({ aluno: "", livro: "", status: "", data: "" });
+    setNewCopia({ livro: "", status: "", aluno: "" });
   };
 
   /* ----------------------------------
@@ -166,7 +163,7 @@ export default function CopiaTablePage(): JSX.Element {
   };
 
   const handleDeleteConfirm = () => {
-    setCopias(prev => prev.filter(e => !selectedRows.includes(e.id)));
+    setcopia(prev => prev.filter(e => !selectedRows.includes(e.ISBN)));
     setSelectedRows([]);
     setShowDeleteModal(false);
   };
@@ -177,38 +174,38 @@ export default function CopiaTablePage(): JSX.Element {
      Editar inline
      ---------------------------------- */
   const handleEditToggle = () => {
-    if (editingId === null) {
+    if (editingISBN === null) {
       if (selectedRows.length !== 1) {
         alert("Selecione exatamente uma linha para editar.");
         return;
       }
-      const id = selectedRows[0];
-      const row = copias.find(e => e.id === id)!;
-      setEditingId(id);
-      setEditValues({ aluno: row.aluno, livro: row.livro, status: row.status, data: row.data });
+      const ISBN = selectedRows[0];
+      const row = copia.find(e => e.ISBN === ISBN)!;
+      setEditingISBN(ISBN);
+      setEditValues({ livro: row.livro, status: row.status, aluno: row.aluno });
     } else {
-      if (!editValues.aluno.trim() || !editValues.livro.trim() || !editValues.status.trim() || !editValues.data.trim()) {
+      if ( !editValues.livro.trim() || !editValues.status.trim() || !editValues.aluno.trim()) {
         alert("Preencha todos os campos: Aluno, Livro, Status e Data.");
         return;
       }
 
-      setCopias(prev => prev.map(e => e.id === editingId ? { id: e.id, aluno: editValues.aluno.trim(), livro: editValues.livro.trim(), status: editValues.status.trim(), data: editValues.data.trim() } : e));
-      setEditingId(null);
-      setEditValues({ aluno: "", livro: "", status: "", data: "" });
+      setcopia(prev => prev.map(e => e.ISBN === editingISBN ? { ISBN: e.ISBN, livro: editValues.livro.trim(), status: editValues.status.trim(), aluno: editValues.aluno.trim()} : e));
+      setEditingISBN(null);
+      setEditValues({ livro: "", status: "", aluno: "" });
       setSelectedRows([]);
     }
   };
 
   const handleEditCancel = () => {
-    setEditingId(null);
-    setEditValues({ aluno: "", livro: "", status: "", data: "" });
+    setEditingISBN(null);
+    setEditValues({ livro: "", status: "", aluno: "" });
     setSelectedRows([]);
   };
 
   /* ----------------------------------
      Misc
      ---------------------------------- */
-  const clearFilters = () => setFilters({ id: "", aluno: "", livro: "", status: "", data: "" });
+  const clearFilters = () => setFilters({ ISBN: "", livro: "", status: "", aluno: "" });
   const hasActiveFilters = useMemo(() => Object.values(filters).some(v => v !== ""), [filters]);
 
   /* ----------------------------------
@@ -235,20 +232,11 @@ export default function CopiaTablePage(): JSX.Element {
 
                   <div className="filter-fields">
                     <div className="filter-field">
-                      <label>ID</label>
+                      <label>ISBN</label>
                       <input 
-                        value={filters.id} 
-                        onChange={(e) => setFilters(prev => ({ ...prev, id: e.target.value }))} 
-                        placeholder="Filtrar por ID" 
-                      />
-                    </div>
-
-                    <div className="filter-field">
-                      <label>Aluno</label>
-                      <input 
-                        value={filters.aluno} 
-                        onChange={(e) => setFilters(prev => ({ ...prev, aluno: e.target.value }))} 
-                        placeholder="Filtrar por aluno" 
+                        value={filters.ISBN} 
+                        onChange={(e) => setFilters(prev => ({ ...prev, ISBN: e.target.value }))} 
+                        placeholder="Filtrar por ISBN" 
                       />
                     </div>
 
@@ -271,11 +259,11 @@ export default function CopiaTablePage(): JSX.Element {
                     </div>
 
                     <div className="filter-field">
-                      <label>Data</label>
+                      <label>Aluno</label>
                       <input 
-                        value={filters.data} 
-                        onChange={(e) => setFilters(prev => ({ ...prev, data: e.target.value }))} 
-                        placeholder="Filtrar por data" 
+                        value={filters.aluno} 
+                        onChange={(e) => setFilters(prev => ({ ...prev, aluno: e.target.value }))} 
+                        placeholder="Filtrar por aluno" 
                       />
                     </div>
                   </div>
@@ -297,11 +285,11 @@ export default function CopiaTablePage(): JSX.Element {
               <img src={trashIcon} alt="Deletar" className="button-icon" />
             </button>
 
-            <button className="edit-btn" onClick={handleEditToggle} title={editingId ? "Salvar edição" : "Editar selecionado"}>
-              <img src={editIcon} alt={editingId ? "Salvar" : "Editar"} className="button-icon" />
+            <button className="edit-btn" onClick={handleEditToggle} title={editingISBN ? "Salvar edição" : "Editar selecionado"}>
+              <img src={editIcon} alt={editingISBN ? "Salvar" : "Editar"} className="button-icon" />
             </button>
 
-            {editingId !== null && (
+            {editingISBN !== null && (
               <button className="cancel-edit-btn" onClick={handleEditCancel}>Cancelar</button>
             )}
           </div>
@@ -320,11 +308,10 @@ export default function CopiaTablePage(): JSX.Element {
                   checked={selectedRows.length === currentRows.length && currentRows.length > 0} 
                 />
               </th>
-              <th>ID</th>
-              <th>NOME DO ALUNO</th>
-              <th>LIVRO</th>
+              <th>ISBN</th>
+              <th>NOME DO LIVRO</th>
               <th>STATUS</th>
-              <th>DATA</th>
+              <th>NOME DO ALUNO</th>
             </tr>
           </thead>
 
@@ -337,31 +324,19 @@ export default function CopiaTablePage(): JSX.Element {
               </tr>
             ) : (
               currentRows.map((copia) => (
-                <tr key={copia.id} className={selectedRows.includes(copia.id) ? "selected" : ""}>
+                <tr key={copia.ISBN} className={selectedRows.includes(copia.ISBN) ? "selected" : ""}>
                   <td>
                     <input 
                       type="checkbox" 
-                      checked={selectedRows.includes(copia.id)} 
-                      onChange={() => handleRowSelect(copia.id)} 
+                      checked={selectedRows.includes(copia.ISBN)} 
+                      onChange={() => handleRowSelect(copia.ISBN)} 
                     />
                   </td>
 
-                  <td>{copia.id}</td>
+                  <td>{copia.ISBN}</td>
 
                   <td>
-                    {editingId === copia.id ? (
-                      <input 
-                        className="inline-edit" 
-                        value={editValues.aluno} 
-                        onChange={(e) => setEditValues(prev => ({ ...prev, aluno: e.target.value }))} 
-                      />
-                    ) : (
-                      copia.aluno
-                    )}
-                  </td>
-
-                  <td>
-                    {editingId === copia.id ? (
+                    {editingISBN === copia.ISBN ? (
                       <input 
                         className="inline-edit" 
                         value={editValues.livro} 
@@ -373,7 +348,7 @@ export default function CopiaTablePage(): JSX.Element {
                   </td>
 
                   <td>
-                    {editingId === copia.id ? (
+                    {editingISBN === copia.ISBN ? (
                       <input 
                         className="inline-edit" 
                         value={editValues.status} 
@@ -385,17 +360,17 @@ export default function CopiaTablePage(): JSX.Element {
                   </td>
 
                   <td>
-                    {editingId === copia.id ? (
+                    {editingISBN === copia.ISBN ? (
                       <input 
-                        type="date" 
                         className="inline-edit" 
-                        value={editValues.data} 
-                        onChange={(e) => setEditValues(prev => ({ ...prev, data: e.target.value }))} 
+                        value={editValues.aluno} 
+                        onChange={(e) => setEditValues(prev => ({ ...prev, aluno: e.target.value }))} 
                       />
                     ) : (
-                      copia.data
+                      copia.aluno
                     )}
                   </td>
+
                 </tr>
               ))
             )}
@@ -417,16 +392,7 @@ export default function CopiaTablePage(): JSX.Element {
             <div className="modal-header">Adicionar Nova Cópia</div>
             <div className="modal-body">
               <div className="modal-field">
-                <label>Nome do Aluno</label>
-                <input 
-                  value={newCopia.aluno} 
-                  onChange={(e) => setNewCopia(prev => ({ ...prev, aluno: e.target.value }))} 
-                  placeholder="Digite o nome do aluno" 
-                />
-              </div>
-
-              <div className="modal-field">
-                <label>Livro</label>
+                <label>Nome do Livro</label>
                 <input 
                   value={newCopia.livro} 
                   onChange={(e) => setNewCopia(prev => ({ ...prev, livro: e.target.value }))} 
@@ -442,18 +408,16 @@ export default function CopiaTablePage(): JSX.Element {
                 >
                   <option value="">Selecione o status</option>
                   <option value="Ativo">Ativo</option>
-                  <option value="Devolvido">Devolvido</option>
                   <option value="Atrasado">Atrasado</option>
-                  <option value="Renovado">Renovado</option>
                 </select>
               </div>
 
               <div className="modal-field">
-                <label>Data</label>
+                <label>Nome do Aluno</label>
                 <input 
-                  type="date" 
-                  value={newCopia.data} 
-                  onChange={(e) => setNewCopia(prev => ({ ...prev, data: e.target.value }))} 
+                  value={newCopia.aluno} 
+                  onChange={(e) => setNewCopia(prev => ({ ...prev, aluno: e.target.value }))} 
+                  placeholder="Digite o nome do aluno" 
                 />
               </div>
             </div>
