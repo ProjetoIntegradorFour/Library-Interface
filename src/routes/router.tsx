@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { Dashboard, Login, Acervo, Emprestimos, Atrasos, Copia, Perfil, Configuracao, Register } from "../pages";
+import { Dashboard, Login, Acervo, Emprestimos, Atrasos, Copia, Register } from "../pages";
 import ProtectedRoute from "../components/ProtectedRoute";
 import ProtectedLayout from "./ProtectedLayout";
 
@@ -62,26 +62,6 @@ export const router = createBrowserRouter([
       <ProtectedRoute>
         <LayoutWrapper>
           <Copia />
-        </LayoutWrapper>
-      </ProtectedRoute>
-    )
-  },
-  {
-    path: "/perfil",
-    element: (
-      <ProtectedRoute>
-        <LayoutWrapper>
-          <Perfil />
-        </LayoutWrapper>
-      </ProtectedRoute>
-    )
-  },
-  {
-    path: "/configuracao",
-    element: (
-      <ProtectedRoute>
-        <LayoutWrapper>
-          <Configuracao />
         </LayoutWrapper>
       </ProtectedRoute>
     )

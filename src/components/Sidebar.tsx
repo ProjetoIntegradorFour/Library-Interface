@@ -9,7 +9,11 @@ import copiaIcon from "../assets/img/document.png";
 import perfilIcon from "../assets/img/perfil.png";
 import configIcon from "../assets/img/configuracoes.png";
 
-export default function Sidebar() {
+interface SidebarProps {
+  onOpenPerfil: () => void;
+}
+
+export default function Sidebar({ onOpenPerfil }: SidebarProps) {
   const accessibleRoutes = getAccessibleRoutes();
 
   const shouldShowRoute = (path: string): boolean => {
@@ -70,12 +74,12 @@ export default function Sidebar() {
 
       <div className="menu-bottom">
         {shouldShowRoute("/perfil") && (
-          <NavLink
-            to="/perfil"
-            className={({ isActive }) => `mini-item ${isActive ? "active" : ""}`}
+          <div
+            className="mini-item"
+            onClick={onOpenPerfil}
           >
             <img src={perfilIcon} alt="Perfil" className="mini-icon" />
-          </NavLink>
+          </div>
         )}
 
         {shouldShowRoute("/configuracao") && (
