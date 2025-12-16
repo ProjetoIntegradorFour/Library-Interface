@@ -78,7 +78,7 @@ const Register = () => {
 
       await fetchUsers();
 
-      setShowPopup(true); // <-- popup aparece aqui
+      setShowPopup(true);
 
     } catch (err) {
       console.log("Erro:", err);
@@ -172,7 +172,6 @@ const Register = () => {
         )}
       </div>
 
-      {/* POPUP BONITO */}
       {showPopup && (
         <div className="popup-overlay">
           <div className="popup-box">

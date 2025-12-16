@@ -5,7 +5,7 @@ import dashboardIcon from "../assets/img/dashboard.png";
 import acervoIcon from "../assets/img/book.png";
 import emprestimosIcon from "../assets/img/user.png";
 import atrasosIcon from "../assets/img/money.png";
-import relatoriosIcon from "../assets/img/document.png";
+import copiaIcon from "../assets/img/document.png";
 import perfilIcon from "../assets/img/perfil.png";
 import configIcon from "../assets/img/configuracoes.png";
 
@@ -35,6 +35,16 @@ export default function Sidebar() {
         >
           <img src={acervoIcon} alt="Acervo" className="icon" />
           Acervo
+        </NavLink>
+      )}
+
+      {shouldShowRoute("/copia") && (
+        <NavLink
+          to="/copia"
+          className={({ isActive }) => `menu-item ${isActive ? "active" : ""}`}
+        >
+          <img src={copiaIcon} alt="Cópia" className="icon" />
+          Cópia
         </NavLink>
       )}
 

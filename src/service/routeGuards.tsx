@@ -5,7 +5,7 @@ const routePermissions: Record<string, string[]> = {
     '/acervo': ['USER', 'ADMIN'],
     '/emprestimos': ['USER', 'ADMIN'],
     '/atrasos': ['ADMIN'],
-    '/relatorios': ['ADMIN'],
+    '/copia': ['ADMIN'],
     '/perfil': ['USER', 'ADMIN'],
     '/configuracao': ['ADMIN'],
 };
