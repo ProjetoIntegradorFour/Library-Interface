@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { getAccessibleRoutes } from "../service/routeGuards";
 
 import dashboardIcon from "../assets/img/dashboard.png";
@@ -7,23 +7,28 @@ import emprestimosIcon from "../assets/img/user.png";
 import atrasosIcon from "../assets/img/money.png";
 import copiaIcon from "../assets/img/document.png";
 import perfilIcon from "../assets/img/perfil.png";
-import configIcon from "../assets/img/configuracoes.png";
+import exitIcon from "../assets/img/exit.png";
 
 interface SidebarProps {
   onOpenPerfil: () => void;
 }
 
 export default function Sidebar({ onOpenPerfil }: SidebarProps) {
+  const navigate = useNavigate();
   const accessibleRoutes = getAccessibleRoutes();
 
   const shouldShowRoute = (path: string): boolean => {
     return accessibleRoutes.includes(path);
   };
 
-  // 🔒 Rotas bloqueadas temporariamente
   const blockedRoutes = ["/emprestimos", "/atrasos"];
 
   const isBlocked = (path: string) => blockedRoutes.includes(path);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
 
   return (
     <aside className="sidebar">
@@ -57,7 +62,6 @@ export default function Sidebar({ onOpenPerfil }: SidebarProps) {
         </NavLink>
       )}
 
-      {/* 🔒 EMPRÉSTIMOS (bloqueado) */}
       {shouldShowRoute("/emprestimos") && (
         <div className={`menu-item disabled`}>
           <img src={emprestimosIcon} alt="Empréstimos" className="icon" />
@@ -65,7 +69,6 @@ export default function Sidebar({ onOpenPerfil }: SidebarProps) {
         </div>
       )}
 
-      {/* 🔒 ATRASOS / PAGAMENTOS (bloqueado) */}
       {shouldShowRoute("/atrasos") && (
         <div className={`menu-item disabled`}>
           <img src={atrasosIcon} alt="Atrasos/Pagamentos" className="icon" />
@@ -80,14 +83,9 @@ export default function Sidebar({ onOpenPerfil }: SidebarProps) {
           </div>
         )}
 
-        {shouldShowRoute("/configuracao") && (
-          <NavLink
-            to="/configuracao"
-            className={({ isActive }) => `mini-item ${isActive ? "active" : ""}`}
-          >
-            <img src={configIcon} alt="Configurações" className="mini-icon" />
-          </NavLink>
-        )}
+        <div className="mini-item" onClick={handleLogout}>
+          <img src={exitIcon} alt="Sair" className="mini-icon" />
+        </div>
       </div>
     </aside>
   );
